@@ -1,0 +1,27 @@
+# test resource verification spec
+file:
+  /opt/geth/geth:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: file
+file:
+  /mnt/geth/geth.toml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains:
+      - "[Eth]"
+      - "SyncMode ="
+      - "[Node]"
+      - "DataDir ="
+command:
+  /opt/geth/geth --help:
+    exit-status: 0
+process:
+  geth:
+    running: true
+    skip: false
