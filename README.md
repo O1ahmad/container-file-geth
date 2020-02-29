@@ -3,8 +3,8 @@
 
 Container File :computer: :link: Geth
 =========
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-template?color=yellow)
-[![Build Status](https://travis-ci.org/0x0I/container-file-template.svg?branch=master)](https://travis-ci.org/0x0I/container-file-template)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-geth?color=yellow)
+[![Build Status](https://travis-ci.org/0x0I/container-file-geth.svg?branch=master)](https://travis-ci.org/0x0I/container-file-geth)
 [![Docker Pulls]()](<docker-hub-link)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
