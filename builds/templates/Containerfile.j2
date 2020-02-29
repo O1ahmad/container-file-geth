@@ -1,0 +1,25 @@
+# Specific OS distribution to utilize as base image
+FROM {{ os_version }}
+{% if system_dependencies|length > 0 %}
+
+RUN {{ package_manager }} update -y && \
+    {{ package_manager }} upgrade -y && \
+    {{ package_manager }} install -y {{ system_dependencies|join(' ') }}
+{% endif %}
+
+RUN mkdir -p /opt/geth \
+    && curl -L {{ archive_url }} | tar xzf - --strip-components=1 -C /opt/geth \
+    && chmod 777 /opt/geth
+
+RUN mkdir /entrypoint.d
+COPY entrypoints/setup-config.sh  /entrypoint.d
+
+COPY scripts/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+COPY scripts/start-geth.sh /usr/bin/start-geth.sh
+RUN chmod +x /usr/bin/start-geth.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["start-geth.sh"]
