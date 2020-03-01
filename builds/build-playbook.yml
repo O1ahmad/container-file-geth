@@ -26,16 +26,16 @@
       with_items: "{{ build_matrix }}"
     - name: Build each OS based image from parent DIR of playbook
       become: true
-      when: push_images
+      when: build_images
       command:
         chdir: "{{ playbook_dir.split('/')[0:-1]|join('/') }}"
-        cmd: "docker build --file {{ playbook_dir }}/artifacts/{{ item.name }}/Containerfile --tag testing-geth:{{ item.name }} ."
+        cmd: "docker build --file {{ playbook_dir }}/artifacts/{{ item.name }}/Containerfile --tag staged-geth:{{ item.name }} ."
       with_items: "{{ build_matrix }}"
     - name: Re-tag images for public release/push
       when: push_images
       command:
         chdir: "{{ playbook_dir.split('/')[0:-1]|join('/') }}"
-        cmd: "docker tag testing-geth:{{ item.name }} 0labs/0x01.geth:{{ item.name }}"
+        cmd: "docker tag staged-geth:{{ item.name }} 0labs/0x01.geth:{{ item.name }}"
       with_items: "{{ build_matrix }}"
     - name: Push each OS based image to the public Dockerhub repository
       when: push_images
