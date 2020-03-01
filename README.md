@@ -48,9 +48,9 @@ _The following variables can be customized to manage the location and content of
 `$GETH_CONFIG_DIR=</path/to/configuration/dir>` (**default**: `/etc/geth`)
 - path on target host where the `geth` TOML configuration should be stored
 
-  ```bash
+```bash
 GETH_CONFIG_DIR=/mnt/etc/geth
-  ```
+```
  
 `CONFIG_<section-keyword>_<section-property> = <property-value (string)> **default**: None`
 
