@@ -87,7 +87,7 @@ Running the `geth` client and API server, either in its RPC, IPC or WS-RPC form,
 
 _The following variables can be customized to manage Geth's execution profile/policy:_
 
-`$EXTRA_ARGS: <geth-cli-options>` (**default**: see *NONE*)
+`$EXTRA_ARGS: <geth-cli-options>` (**default**: *NONE*)
 - list of `geth` commandline arguments to pass to the binary at runtime for customizing launch.
 
 Supporting full expression of `geth`'s cli, this variable enables the role of target hosts to be customized according to the user's specification; whether to activate a particular API protocol listener, connect to a pre-configured Ethereum test or production network or whatever is supported by `geth`.
