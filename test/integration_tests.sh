@@ -6,21 +6,29 @@ set -euo pipefail
 [ -n "${DEBUG:-""}" ] && set -x
 
 # [Test-Setup]
-cat <<OS | xargs -I % docker build --file Containerfile --build-arg OS_VERSION=% --build-arg ARCHIVE_URL --tag geth-testing-% .
-centos:7
-centos:8
-fedora:29
-fedora:30
-fedora:31
+cat <<OS | xargs -I % docker build --file builds/artifacts/%/Containerfile --tag testing-geth:% .
+centos-7
+centos-8
+fedora-29
+fedora-30
+fedora-31
+ubuntu-18.04
+ubuntu-19.04
+debian-8
+debian-9
 OS
 
 # [Test-Run+Validate]
 export GOSS_FILES_PATH=test
-cat <<OS | xargs -I % dgoss run --env-file test/config-test.env geth-testing-%
-centos:7
-centos:8
-fedora:29
-fedora:30
-fedora:31
+cat <<OS | xargs -I % dgoss run --env-file test/config-test.env testing-geth:%
+centos-7
+centos-8
+fedora-29
+fedora-30
+fedora-31
+ubuntu-18.04
+ubuntu-19.04
+debian-8
+debian-9
 OS
 unset GOSS_FILES_PATH
