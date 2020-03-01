@@ -16,7 +16,8 @@ env:
 before_script:
   - sudo curl -fsSL https://goss.rocks/install | sudo sh
   - sudo pip install ansible
-  - ansible-playbook builds/build-playbook.yml -v
+  - ansible-playbook builds/build-playbook.yml -vv
 
 script:
-    - GOSS_FILES_PATH=test dgoss run --env-file test/config-test.env 0labs/0x01.geth:${OS_VERSION}
+    - docker build --file builds/artifacts/${OS_VERSION}/Containerfile --tag testing-geth:${OS_VERSION} .
+    - GOSS_FILES_PATH=test dgoss run --env-file test/config-test.env testing-geth:${OS_VERSION}
