@@ -134,7 +134,7 @@ Run a full Ethereum node using "fast" sync-mode (only process most recent transa
 ```
 podman run --env CONFIG_Eth_SyncMode=fast \
            --env CONFIG_Node_DataDir=/mnt/geth/data \
-           --env EXTRA_ARGS=--rpc --rpcaddr="0.0.0.0" --mine --miner.threads 16
+           --env EXTRA_ARGS="--rpc --rpcaddr="0.0.0.0" --mine --miner.threads 16" \
            0labs/0x01.geth:centos-7
 ```
 
