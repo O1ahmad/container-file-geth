@@ -12,7 +12,6 @@ Container File :computer: :link: Geth
   - [Supported Platforms](#supported-platforms)
   - [Requirements](#requirements)
   - [Environment Variables](#environment-variables)
-      - [Install](#install)
       - [Config](#config)
       - [Launch](#launch)
   - [Dependencies](#dependencies)
