@@ -53,7 +53,7 @@ GETH_CONFIG_DIR=/mnt/etc/geth
  
 `$CONFIG_<section-keyword>_<section-property> = <property-value (string)>` **default**: *None*
 
-* Any configuration setting/value key-pair supported by `geth` should be expressible within each `CONFIG_*` environment variable and properly rendered within the associated TOML config. **Note:** <section-keyword> along with the other property specifications should be written as expected to be rendered within the associated `TOML` config (e.g. *Node.P2P*).
+* Any configuration setting/value key-pair supported by `geth` should be expressible within each `CONFIG_*` environment variable and properly rendered within the associated TOML config. **Note:** `<section-keyword>` along with the other property specifications should be written as expected to be rendered within the associated `TOML` config (**e.g.** *Node.P2P*).
 
 Furthermore, configuration is not constrained by hardcoded author defined defaults or limited by pre-baked templating. If the config section, setting and value are recognized by the `geth` tool, :thumbsup: to define within an environnment variable according to the following syntax.
 
@@ -116,7 +116,7 @@ Supporting full expression of `geth`'s cli, this variable enables the role of ta
 Dependencies
 ------------
 
-- 0x0i.systemd
+None
 
 Example Run
 ----------------
