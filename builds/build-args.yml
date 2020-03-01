@@ -1,6 +1,7 @@
 default_os_version: centos-7
 default_archive_url: https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.9.9-01744997.tar.gz
 default_package_manager: dnf
+build_images: false
 push_images: false
 build_matrix:
   - name: centos-7
