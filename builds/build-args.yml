@@ -17,21 +17,21 @@ build_matrix:
     os_version: fedora:31
   - name: ubuntu-18.04
     os_version: ubuntu:18.04
-    package_manager: apt-get
+    package_manager: apt
     system_dependencies:
       - curl
   - name: ubuntu-19.04
     os_version: ubuntu:19.04
-    package_manager: apt-get
+    package_manager: apt
     system_dependencies:
       - curl
   - name: debian-8
     os_version: debian:8
-    package_manager: apt-get
+    package_manager: apt
     system_dependencies:
       - curl
   - name: debian-9
     os_version: debian:9
-    package_manager: apt-get
+    package_manager: apt
     system_dependencies:
       - curl
