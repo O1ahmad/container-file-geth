@@ -130,11 +130,12 @@ Launch an Ethereum light client and connect it to the Rinkeby PoA (Proof of Auth
 podman run --env CONFIG_Eth_SyncMode='"light"' --env EXTRA_ARGS=--rinkeby 0labs/0x01.geth:centos-7
 ```
 
-Run a full Ethereum node using "fast" sync-mode (only process most recent transactions), enabling both the RPC server interface and client miner and overriding the (block) data directory:
+Run a full Ethereum node using "fast" sync-mode (only process most recent transactions), enabling both the RPC server interface and overriding the (block) data directory:
 ```
 podman run --env CONFIG_Eth_SyncMode='"fast"' \
            --env CONFIG_Node_DataDir='"/mnt/geth/data"' \
            --env EXTRA_ARGS="--rpc" \
+           --volume geth_data:/mnt/geth/data
            0labs/0x01.geth:centos-7
 ```
 
