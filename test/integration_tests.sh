@@ -13,7 +13,7 @@ fedora-29
 fedora-30
 fedora-31
 ubuntu-18.04
-ubuntu-19.04
+ubuntu-19.10
 debian-8
 debian-9
 OS
@@ -27,7 +27,7 @@ fedora-29
 fedora-30
 fedora-31
 ubuntu-18.04
-ubuntu-19.04
+ubuntu-19.10
 debian-8
 debian-9
 OS

@@ -11,8 +11,7 @@ ENV GETH_HOME=/opt/geth
 WORKDIR $GETH_HOME
 RUN curl -L {{ archive_url }} | tar xzf - --strip-components=1 -C $GETH_HOME
 
-RUN mkdir /entrypoint.d
-COPY entrypoints/setup-config.sh /entrypoint.d
+COPY entrypoints/setup-config.sh /entrypoint.d/
 
 COPY scripts/entrypoint.sh /entrypoint.sh
 COPY scripts/start-geth.sh /usr/bin/start-geth.sh
