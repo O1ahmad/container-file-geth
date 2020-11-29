@@ -9,19 +9,19 @@ build_matrix:
     package_manager: yum
   - name: centos-8
     os_version: centos:8
-  - name: fedora-29
-    os_version: fedora:29
-  - name: fedora-30
-    os_version: fedora:30
   - name: fedora-31
     os_version: fedora:31
+  - name: fedora-32
+    os_version: fedora:32
+  - name: fedora-33
+    os_version: fedora:33
   - name: ubuntu-18.04
     os_version: ubuntu:18.04
     package_manager: apt
     system_dependencies:
       - curl
-  - name: ubuntu-19.04
-    os_version: ubuntu:19.04
+  - name: ubuntu-20.04
+    os_version: ubuntu:20.04
     package_manager: apt
     system_dependencies:
       - curl
