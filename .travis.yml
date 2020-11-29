@@ -1,13 +1,14 @@
 ---
+dist: focal
 language: minimal
 services:
   - docker
 env:
   - OS_VERSION=centos-7
   - OS_VERSION=centos-8
-  - OS_VERSION=fedora-29
-  - OS_VERSION=fedora-30
   - OS_VERSION=fedora-31
+  - OS_VERSION=fedora-32
+  - OS_VERSION=fedora-33
   - OS_VERSION=ubuntu-18.04
   - OS_VERSION=ubuntu-20.04
   - OS_VERSION=debian-8
