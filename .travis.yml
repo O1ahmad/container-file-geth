@@ -9,7 +9,7 @@ env:
   - OS_VERSION=fedora-30
   - OS_VERSION=fedora-31
   - OS_VERSION=ubuntu-18.04
-  - OS_VERSION=ubuntu-19.04
+  - OS_VERSION=ubuntu-20.04
   - OS_VERSION=debian-8
   - OS_VERSION=debian-9
 

@@ -20,8 +20,8 @@ build_matrix:
     package_manager: apt
     system_dependencies:
       - curl
-  - name: ubuntu-19.04
-    os_version: ubuntu:19.04
+  - name: ubuntu-20.04
+    os_version: ubuntu:20.04
     package_manager: apt
     system_dependencies:
       - curl
