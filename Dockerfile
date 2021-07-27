@@ -1,5 +1,6 @@
 ARG base_version="golang:1.16-alpine"
 ARG geth_version=v1.10.6
+ARG version=0.1.1
 
 # ******* Stage: builder ******* #
 FROM ${base_version} as builder
@@ -7,10 +8,9 @@ FROM ${base_version} as builder
 RUN apk update && apk add --no-cache gcc musl-dev linux-headers git ca-certificates
 
 WORKDIR /tmp
-RUN cat /etc/resolv.conf
 RUN git clone https://github.com/ethereum/go-ethereum.git && cd go-ethereum && git checkout ${geth_version}
 
-RUN make geth
+RUN cd go-ethereum && make geth
 
 # ******* Stage: base ******* #
 FROM ubuntu:21.04 as base
@@ -46,6 +46,8 @@ CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 
 # ******* Stage: release ******* #
 FROM base as release
+
+LABEL version="${version}"
 
 COPY --from=builder /tmp/go-ethereum/build/bin/geth /usr/local/bin/
 
