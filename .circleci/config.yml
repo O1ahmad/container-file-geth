@@ -1,0 +1,20 @@
+version: 2.1
+jobs:
+   build:
+      machine: true
+      steps:
+         - checkout
+         - run:
+              name: docker build complete image
+              command: docker build --file Dockerfile --tag demo:build .
+         - run:
+              name: docker build and --target test
+              command: docker build --file Dockerfile --target test --tag demo:test . && docker run demo:test
+
+         - run:
+              name: login to Dockerhub for release
+              command: echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+
+         - run:
+              name: push image version to Dockerhub
+              command: make release
