@@ -5,7 +5,7 @@ ARG version=0.1.1
 # ******* Stage: builder ******* #
 FROM ${base_version} as builder
 
-RUN apk update && apk add --no-cache gcc musl-dev linux-headers git ca-certificates
+RUN apk update && apk add --no-cache gcc musl-dev linux-headers git make
 
 WORKDIR /tmp
 RUN git clone https://github.com/ethereum/go-ethereum.git && cd go-ethereum && git checkout ${geth_version}
