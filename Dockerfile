@@ -18,6 +18,7 @@ FROM ubuntu:21.04 as base
 RUN apt update && apt install --yes --no-install-recommends \
     ca-certificates \
     curl \
+    pip \
     tini \
     && rm -rf /var/lib/apt/lists/*
 

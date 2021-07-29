@@ -8,4 +8,9 @@ config_path="${config_dir}/config.toml"
 
 mkdir -p $config_dir
 
-geth-helper --config-path $config_path
+# customize config based on "CONFIG_<section>_<setting>" set environment variables
+geth-helper config customize --config-path $config_path
+
+# remove surrounding quotes from ALL section names if necessary
+sed -i 's/\[\"/\[/g' $config_path
+sed -i 's/\"\]/\]/g' $config_path
