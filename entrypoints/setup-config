@@ -11,6 +11,12 @@ mkdir -p $config_dir
 # customize config based on "CONFIG_<section>_<setting>" set environment variables
 geth-helper config customize --config-path $config_path
 
+# TODO: determine better workaround for toml "" parsing re: section names and list
+# technically, the python toml parser should be better/smarter about handling these cases
 # remove surrounding quotes from ALL section names if necessary
 sed -i 's/\[\"/\[/g' $config_path
 sed -i 's/\"\]/\]/g' $config_path
+
+# remove surrounding quotes from ALL list setting values if necessary
+sed -i 's/\"\[/\[/g' $config_path
+sed -i 's/\]\"/\]/g' $config_path

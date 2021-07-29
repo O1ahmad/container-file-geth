@@ -6,6 +6,20 @@ file:
     owner: root
     group: root
     filetype: file
+  /root/.ethereum/geth/config.toml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains:
+      - "[Eth]"
+      - "SyncMode ="
+      - "[Node]"
+      - "HTTPModules ="
+      - "DataDir ="
+      - "[Node.P2P]"
+      - "MaxPeers ="
 command:
   geth --help:
     exit-status: 0

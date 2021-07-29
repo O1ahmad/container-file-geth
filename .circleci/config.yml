@@ -9,7 +9,7 @@ jobs:
               command: docker build --file Dockerfile --tag geth:build .
          - run:
               name: docker build and --target test
-              command: docker build --file Dockerfile --target test --tag geth:test . && docker run geth:test
+              command: docker build --file Dockerfile --target test --tag geth:test . && docker run --env-file test/test.env geth:test
 
          - run:
               name: login to Dockerhub for release
