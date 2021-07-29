@@ -25,6 +25,7 @@ RUN apt update && apt install --yes --no-install-recommends \
 WORKDIR /docker-entrypoint.d
 COPY entrypoints /docker-entrypoint.d
 COPY scripts/entrypoint.sh /usr/local/bin/geth-entrypoint
+
 COPY scripts/geth-helper.py /usr/local/bin/geth-helper
 RUN chmod +x /usr/local/bin/geth-helper
 

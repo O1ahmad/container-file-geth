@@ -4,14 +4,13 @@
 Container File :computer: :link: Geth
 =========
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-geth?color=yellow)
-[![Build Status](https://travis-ci.org/0x0I/container-file-geth.svg?branch=master)](https://travis-ci.org/0x0I/container-file-geth)
-[![Docker Pulls](https://img.shields.io/docker/pulls/0labs/0x01.geth?style=flat)](https://hub.docker.com/repository/docker/0labs/0x01.geth)
+[![0x0I](https://circleci.com/gh/0x0I/container-file-geth.svg?style=svg)](https://circleci.com/gh/0x0I/container-file-geth)
+[![Docker Pulls](https://img.shields.io/docker/pulls/0labs/geth?style=flat)](https://hub.docker.com/repository/docker/0labs/geth)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
 **Table of Contents**
   - [Environment Variables](#environment-variables)
       - [Config](#config)
-      - [Launch](#launch)
       - [Operations](#operations)
   - [Example Run](#example-run)
   - [License](#license)
@@ -23,14 +22,14 @@ Environment Variables
 --------------
 Variables are available and organized according to the following software & machine provisioning stages:
 * _config_
-* _launch_
+* _operations_
 
 #### Config
 
 Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup language, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
 
 _The following variables can be customized to manage the content of this TOML configuration:_
- 
+
 `$CONFIG_<section-keyword>_<section-property> = <property-value (string)>` **default**: *None*
 
 * Any configuration setting/value key-pair supported by `geth` should be expressible within each `CONFIG_*` environment variable and properly rendered within the associated TOML config. **Note:** `<section-keyword>` along with the other property specifications should be written as expected to be rendered within the associated `TOML` config (**e.g.** *Node.P2P*).
@@ -42,9 +41,9 @@ _The following variables can be customized to manage the content of this TOML co
   # [TOML Section 'Shh']
   CONFIG_Shh_<section-property>=<property-value>
   ```
-  
+
   `<section-property>` -- represents a specific TOML config section property to configure:
-  
+
   ```bash
   # [TOML Section 'Shh']
   # Property: MaxMessageSize
@@ -59,7 +58,7 @@ _The following variables can be customized to manage the content of this TOML co
   CONFIG_Shh_MaxMessageSize=2097152
   ```
 
-#### Launch
+#### Operations
 
 ...
 
@@ -67,19 +66,19 @@ Example Run
 ----------------
 Basic setup with defaults:
 ```
-docker run 0labs/geth
+docker run -it 0labs/geth:latest
 ```
 
 Launch an Ethereum light client and connect it to the Rinkeby PoA (Proof of Authority) test network:
 ```
-docker run --env CONFIG_Eth_SyncMode='"light"' 0labs/geth --rinkeby
+docker run --env CONFIG_Eth_SyncMode=light 0labs/geth --rinkeby
 ```
 
 Run a full Ethereum node using "fast" sync-mode (only process most recent transactions), enabling both the RPC server interface and overriding the (block) data directory:
 ```
-docker run --env CONFIG_Eth_SyncMode='"fast"' \
-           --env CONFIG_Node_DataDir='"/mnt/geth/data"' \
-           --volume geth_data:/mnt/geth/data
+docker run --env CONFIG_Eth_SyncMode=fast \
+           --env CONFIG_Node_DataDir="/mnt/geth/data" \
+           --volume geth_data:/root/.ethereum
            0labs/geth --rpc
 ```
 
