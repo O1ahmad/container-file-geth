@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Print all commands executed if DEBUG mode enabled
+[ -n "${DEBUG:-""}" ] && set -x
+
+config_dir="${GETH_CONFIG_DIR:-/root/.ethereum/geth}"
+config_path="${config_dir}/config.toml"
+
+mkdir -p $config_dir
+
+geth-helper --config-path $config_path

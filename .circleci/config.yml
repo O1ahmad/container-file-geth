@@ -6,10 +6,10 @@ jobs:
          - checkout
          - run:
               name: docker build complete image
-              command: docker build --file Dockerfile --tag demo:build .
+              command: docker build --file Dockerfile --tag geth:build .
          - run:
               name: docker build and --target test
-              command: docker build --file Dockerfile --target test --tag demo:test . && docker run demo:test
+              command: docker build --file Dockerfile --target test --tag geth:test . && docker run geth:test
 
          - run:
               name: login to Dockerhub for release

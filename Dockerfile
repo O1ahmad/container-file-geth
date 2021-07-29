@@ -18,9 +18,10 @@ FROM ubuntu:21.04 as base
 WORKDIR /docker-entrypoint.d
 COPY entrypoints /docker-entrypoint.d
 COPY scripts/entrypoint.sh /usr/local/bin/geth-entrypoint
+COPY scripts/geth-helper.py /usr/local/bin/geth-helper
+RUN chmod +x /usr/local/bin/geth-helper
 
-WORKDIR /scripts
-COPY scripts /scripts
+RUN pip install click toml
 
 ENTRYPOINT ["geth-entrypoint"]
 
