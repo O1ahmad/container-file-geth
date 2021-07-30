@@ -25,9 +25,9 @@ def account():
 # Commands for application configuration customization and inspection
 ###
 
-
 DEFAULT_GETH_CONFIG_PATH = "/root/.ethereum/geth/config.toml"
-
+DEFAULT_GETH_KEYSTORE_DIR = "/root/.ethereum/keystore"
+DEFAULT_GETH_BACKUP_PATH = "/tmp/backups"
 
 def execute_command(command):
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
@@ -82,6 +82,55 @@ def customize(config_path):
     # remove surrounding quotes from ALL list setting values if necessary
     subprocess.call(["sed -i 's/\"\[/\[/g' {path}".format(path=config_path)], shell=True)
     subprocess.call(["sed -i 's/\]\"/\]/g' {path}".format(path=config_path)], shell=True)
+
+@account.command()
+@click.argument('password')
+@click.option('--keystore-dir',
+              default=DEFAULT_GETH_KEYSTORE_DIR,
+              help='path to geth wallet key store')
+@click.option('--backup-path',
+              default=DEFAULT_GETH_BACKUP_PATH,
+              help='path to backup geth wallet key stores')
+def backup_keystore(password, keystore_dir, backup_path):
+    """Encrypt and backup wallet keystores.
+
+    PASSWORD password used to encrypt and secure keystore backups.
+    """
+
+    subprocess.call(
+        [
+            "cd {keystore} && zip --password {pwd} {backup} *".format(
+                backup=backup_path,
+                keystore=keystore_dir,
+                pwd=password
+            )
+        ],
+        shell=True)
+
+@account.command()
+@click.argument('password')
+@click.option('--keystore-dir',
+              default=DEFAULT_GETH_KEYSTORE_DIR,
+              help='path to import a backed-up geth wallet key store')
+@click.option('--backup-path',
+              default=DEFAULT_GETH_BACKUP_PATH,
+              help='path containing backup of a geth wallet key store')
+def import_keystore(password, keystore_dir, backup_path):
+    """Decrypt and import wallet keystores.
+
+    PASSWORD password used to decrypt and import keystore backups.
+    """
+
+    subprocess.call(
+        [
+            "unzip -P {pwd} -d {keystore} {backup}".format(
+                backup=backup_path,
+                keystore=keystore_dir,
+                pwd=password
+            )
+        ],
+        shell=True)
+
 
 if __name__ == "__main__":
     cli()

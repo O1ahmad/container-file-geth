@@ -20,6 +20,7 @@ RUN apt update && apt install --yes --no-install-recommends \
     curl \
     pip \
     tini \
+    zip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /docker-entrypoint.d
