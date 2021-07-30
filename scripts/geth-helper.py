@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import subprocess
 
 import click
 import toml
@@ -56,7 +57,7 @@ def customize(config_path):
         var_split = var.split('_')
         if len(var_split) == 3 and var_split[0].lower() == "config":
 	    # support encoding of '.' or dot char within config settings
-            # with '46', ascii value of the dot (e.g. "CONFIG_Node.P2P_MaxPeers" should be represented
+            # with 'dot' (e.g. "CONFIG_Node.P2P_MaxPeers" should be represented
             # as "CONFIG_NodedotP2P_MaxPeers"
             config_section = var_split[1].replace("dot", ".")
             section_setting = var_split[2]
@@ -71,6 +72,16 @@ def customize(config_path):
 
     with open(config_path, 'w+') as f:
         toml.dump(config_dict, f)
+
+    # TODO: determine better workaround for toml double-quotation parsing re: section names and list
+    # technically, the python toml parser should be better/smarter about handling these cases
+
+    # remove surrounding quotes from ALL section names if necessary
+    subprocess.call(["sed -i 's/\[\"/\[/g' {path}".format(path=config_path)], shell=True)
+    subprocess.call(["sed -i 's/\"\]/\]/g' {path}".format(path=config_path)], shell=True)
+    # remove surrounding quotes from ALL list setting values if necessary
+    subprocess.call(["sed -i 's/\"\[/\[/g' {path}".format(path=config_path)], shell=True)
+    subprocess.call(["sed -i 's/\]\"/\]/g' {path}".format(path=config_path)], shell=True)
 
 if __name__ == "__main__":
     cli()
