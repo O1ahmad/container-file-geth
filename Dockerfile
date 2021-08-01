@@ -17,11 +17,11 @@ FROM ubuntu:21.04 as base
 
 RUN apt update && apt install --yes --no-install-recommends \
     ca-certificates \
+    cron \
     curl \
     pip \
     tini \
-    zip \
-    unzip \
+    zip unzip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /docker-entrypoint.d
