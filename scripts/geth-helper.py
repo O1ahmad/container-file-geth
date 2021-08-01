@@ -115,13 +115,13 @@ def backup_keystore(password, keystore_dir, backup_path):
 @click.option('--backup-path',
               default=DEFAULT_GETH_BACKUP_PATH,
               help='path containing backup of a geth wallet key store')
-def import_keystore(password, keystore_dir, backup_path):
-    """Decrypt and import wallet keystores.
+def import_backup(password, keystore_dir, backup_path):
+    """Decrypt and import wallet keystores backups.
 
     PASSWORD password used to decrypt and import keystore backups.
     """
 
-    subprocess.call(
+    rc = subprocess.call(
         [
             "unzip -P {pwd} -d {keystore} {backup}".format(
                 backup=backup_path,
@@ -130,6 +130,8 @@ def import_keystore(password, keystore_dir, backup_path):
             )
         ],
         shell=True)
+    if rc != 0:
+        print("Import of keystore backup [{backup}] failed with exit code: {code}.".format(backup=backup_path, code=rc))
 
 
 if __name__ == "__main__":
