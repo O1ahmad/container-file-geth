@@ -85,13 +85,13 @@ def customize(config_path):
 
 @account.command()
 @click.argument('password')
-@click.option('--keystore-path',
+@click.option('--keystore-dir',
               default=DEFAULT_GETH_KEYSTORE_DIR,
               help='path to geth wallet key store')
 @click.option('--backup-path',
               default=DEFAULT_GETH_BACKUP_PATH,
               help='path to backup geth wallet key stores')
-def backup_keystore(password, keystore_path, backup_path):
+def backup_keystore(password, keystore_dir, backup_path):
     """Encrypt and backup wallet keystores.
 
     PASSWORD password used to encrypt and secure keystore backups.
@@ -101,7 +101,7 @@ def backup_keystore(password, keystore_path, backup_path):
         [
             "cd {keystore} && zip --password {pwd} {backup} *".format(
                 backup=backup_path,
-                keystore=keystore_path,
+                keystore=keystore_dir,
                 pwd=password
             )
         ],
