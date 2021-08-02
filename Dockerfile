@@ -31,7 +31,7 @@ COPY scripts/entrypoint.sh /usr/local/bin/geth-entrypoint
 COPY scripts/geth-helper.py /usr/local/bin/geth-helper
 RUN chmod +x /usr/local/bin/geth-helper
 
-RUN pip install click toml
+RUN pip install click requests toml
 
 ENTRYPOINT ["geth-entrypoint"]
 

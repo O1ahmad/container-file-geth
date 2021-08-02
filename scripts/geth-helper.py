@@ -4,6 +4,7 @@ import os
 import subprocess
 
 import click
+import requests
 import toml
 
 @click.group()
@@ -11,14 +12,16 @@ import toml
 def cli(debug):
     pass
 
+@cli.group()
+def account():
+    pass
 
 @cli.group()
 def config():
     pass
 
-
 @cli.group()
-def account():
+def status():
     pass
 
 ###
@@ -43,6 +46,18 @@ def execute_command(command):
         print(error.decode('utf-8'))
 
     return output.decode('utf-8')
+
+def execute_jsonrpc(rpc_address, method, params):
+    req = {
+        "jsonrpc":"2.0",
+        "method":method,
+        "params":params,
+        "id":1
+    }
+
+    h = {'Content-Type': 'application/json'}
+    result = requests.post(rpc_address, data=req, headers=h)
+    import pdb; pdb.set_trace()
 
 @config.command()
 @click.option('--config-path',
@@ -133,6 +148,20 @@ def import_backup(password, keystore_dir, backup_path):
     if rc != 0:
         print("Import of keystore backup [{backup}] failed with exit code: {code}.".format(backup=backup_path, code=rc))
 
+@status.command()
+@click.option('--data-dir',
+              default=DEFAULT_GETH_DATADIR,
+              help='path to geth data directoty')
+def check_balances(datadir):
+    """Check all stored account balances.
+    """
+
+    rc = execute_jsonrpc(
+        "https://mainnet.infura.io/v3/4a3a6c645dc94d1b82f8f631a878e03c",
+        "eth_getBalance",
+        params=["0x652eD9d222eeA1Ad843efec01E60C29bF2CF6E4c","latest"])
+    print(rc)
+    import pdb; pdb.set_trace()
 
 if __name__ == "__main__":
     cli()
