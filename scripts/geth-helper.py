@@ -157,7 +157,7 @@ def import_backup(password, keystore_dir, backup_path):
               default=DEFAULT_RPC_ADDRESS,
               help='server address to query for RPC calls')
 def check_balances(rpc_addr):
-    """Check all stored account balances.
+    """Check all client managed account balances.
     """
 
     # collect addresses managed by client

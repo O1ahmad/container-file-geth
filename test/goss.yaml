@@ -20,6 +20,20 @@ file:
       - "DataDir ="
       - "[Node.P2P]"
       - "MaxPeers ="
+package:
+  cron:
+    installed: true
+  zip:
+    installed: true
+  unzip:
+    installed: true
+service:
+  cron:
+    running: true
 command:
   geth --help:
+    exit-status: 0
+  geth-helper --help:
+    exit-status: 0
+  crontab -l:
     exit-status: 0
