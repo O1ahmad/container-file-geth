@@ -29,6 +29,7 @@ package:
     installed: true
 service:
   cron:
+    enabled: true
     running: true
 command:
   geth --help:
@@ -37,3 +38,5 @@ command:
     exit-status: 0
   crontab -l:
     exit-status: 0
+    stdout:
+      - geth-helper account backup-keystore
