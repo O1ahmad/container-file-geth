@@ -29,6 +29,7 @@ def status():
 ###
 
 DEFAULT_GETH_CONFIG_PATH = "/root/.ethereum/geth/config.toml"
+DEFAULT_GETH_DATADIR = "/root/.ethereum"
 DEFAULT_GETH_KEYSTORE_DIR = "/root/.ethereum/keystore"
 DEFAULT_GETH_BACKUP_PATH = "/tmp/backups"
 
