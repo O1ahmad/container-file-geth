@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from datetime import datetime
 import json
 import os
 import subprocess
@@ -113,7 +114,7 @@ def customize(config_path):
 def backup_keystore(password, keystore_dir, backup_path):
     """Encrypt and backup wallet keystores.
 
-    PASSWORD password used to encrypt and secure keystore backups.
+    PASSWORD password used to encrypt and secure keystore backups
     """
 
     subprocess.call(
@@ -137,7 +138,7 @@ def backup_keystore(password, keystore_dir, backup_path):
 def import_backup(password, keystore_dir, backup_path):
     """Decrypt and import wallet keystores backups.
 
-    PASSWORD password used to decrypt and import keystore backups.
+    PASSWORD password used to decrypt and import keystore backups
     """
 
     rc = subprocess.call(
@@ -157,7 +158,7 @@ def import_backup(password, keystore_dir, backup_path):
               default=DEFAULT_RPC_ADDRESS,
               help='server address to query for RPC calls')
 def check_balances(rpc_addr):
-    """Check all client managed account balances.
+    """Check all client managed account balances
     """
 
     # collect addresses managed by client
@@ -174,6 +175,56 @@ def check_balances(rpc_addr):
         result.append({ "account": acct, "balance": int(balance, 16) })
 
     print(json.dumps(result))
+
+@status.command()
+@click.option('--rpc-addr',
+              default=DEFAULT_RPC_ADDRESS,
+              help='server address to query for RPC calls')
+def sync_progress(rpc_addr):
+    """Check client blockchain sync status and process
+    """
+
+    import pdb; pdb.set_trace()
+    status = execute_jsonrpc(
+        rpc_addr,
+        "eth_syncing",
+        params=[]).json()['result']
+
+    lastPercentage = 0; lastBlocksToGo = 0; timeInterval = 0
+    syncPath = '/tmp/geth-sync-progress.json'
+    if os.path.isfile(syncPath):
+        with open(syncPath, 'r') as sync_file:
+            data = json.load(sync_file)
+            lastPercentage = data['lastPercentage']
+            lastBlocksToGo = data['lastBlocksToGo']
+
+            date_format_str = '%d/%m/%Y %H:%M:%S.%f'
+            lastSyncTime = datetime.strptime(data['time'], date_format_str)
+            timeInterval = (datetime.now() - lastSyncTime).total_seconds * 1000
+
+    percentage = (int(status['currentBlock'], 16) / int(status['highestBlock'], 16)) * 100
+    percentagePerTime = percentage - lastPercentage
+    blocksToGo = int(status['highestBlock'], 16) - int(status['currentBlock'], 16)
+    bps = (lastBlocksToGo - blocksToGo) / (timeInterval / 1000)
+    etas = 100 / percentagePerTime * (timeInterval / 1000)
+    etaM = etas/60
+
+    result = {
+        "progress": percentage,
+        "blocksToGo": blocksToGo,
+        "bps": bps,
+        "etaM": etaM
+    }
+    print(json.dumps(result))
+
+    # write out historical data for reference on next invokation
+    last_sync_data = {
+        "lastPercentage": percentage,
+        "lastBlocksToGo": blocksToGo,
+        "time": datetime.now()
+    }
+    with open(syncPath, 'w') as sync_file:
+        json.dump(last_sync_data, sync_file)
 
 if __name__ == "__main__":
     cli()
