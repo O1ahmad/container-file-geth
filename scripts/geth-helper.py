@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import json
 import os
 import subprocess
+import sys
 
 import click
 import requests
@@ -32,14 +34,13 @@ DEFAULT_GETH_CONFIG_PATH = "/root/.ethereum/geth/config.toml"
 DEFAULT_GETH_DATADIR = "/root/.ethereum"
 DEFAULT_GETH_KEYSTORE_DIR = "/root/.ethereum/keystore"
 DEFAULT_GETH_BACKUP_PATH = "/tmp/backups"
+DEFAULT_RPC_ADDRESS = "http://localhost:8545"
 
 def execute_command(command):
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
 
     if process.returncode > 0:
-        print(output.decode('utf-8'))
-        print(error.decode('utf-8'))
         print('Executing command \"%s\" returned a non-zero status code %d' % (command, process.returncode))
         sys.exit(process.returncode)
 
@@ -50,6 +51,7 @@ def execute_command(command):
 
 def execute_jsonrpc(rpc_address, method, params):
     req = {
+<<<<<<< HEAD
         "jsonrpc":"2.0",
         "method":method,
         "params":params,
@@ -59,6 +61,19 @@ def execute_jsonrpc(rpc_address, method, params):
     h = {'Content-Type': 'application/json'}
     result = requests.post(rpc_address, data=req, headers=h)
     import pdb; pdb.set_trace()
+=======
+        "jsonrpc": "2.0",
+        "method": method,
+        "params": params,
+        "id": 1
+    }
+
+    result = requests.post(rpc_address, json=req, headers={'Content-Type': 'application/json'})
+    if result.status_code == requests.codes.ok:
+        return result
+    else:
+        result.raise_for_status()
+>>>>>>> 2e3934098d844fafeb54caf5a44ec53c782ceb6e
 
 @config.command()
 @click.option('--config-path',
@@ -150,19 +165,27 @@ def import_backup(password, keystore_dir, backup_path):
         print("Import of keystore backup [{backup}] failed with exit code: {code}.".format(backup=backup_path, code=rc))
 
 @status.command()
-@click.option('--data-dir',
-              default=DEFAULT_GETH_DATADIR,
-              help='path to geth data directoty')
-def check_balances(datadir):
+@click.option('--rpc-addr',
+              default=DEFAULT_RPC_ADDRESS,
+              help='server address to query for RPC calls')
+def check_balances(rpc_addr):
     """Check all stored account balances.
     """
 
-    rc = execute_jsonrpc(
-        "https://mainnet.infura.io/v3/4a3a6c645dc94d1b82f8f631a878e03c",
-        "eth_getBalance",
-        params=["0x652eD9d222eeA1Ad843efec01E60C29bF2CF6E4c","latest"])
-    print(rc)
-    import pdb; pdb.set_trace()
+    # collect addresses managed by client
+    result = []
+    accounts = execute_jsonrpc(
+        rpc_addr,
+        "eth_accounts",
+        params=[]).json()['result']
+    for acct in accounts:
+        balance = execute_jsonrpc(
+            rpc_addr,
+            "eth_getBalance",
+            params=[acct,"latest"]).json()['result']
+        result.append({ "account": acct, "balance": int(balance, 16) })
+
+    print(json.dumps(result))
 
 if __name__ == "__main__":
     cli()
