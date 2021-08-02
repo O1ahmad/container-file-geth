@@ -191,6 +191,7 @@ def sync_progress(rpc_addr):
         params=[]).json()['result']
 
     lastPercentage = 0; lastBlocksToGo = 0; timeInterval = 0
+    date_format_str = '%d/%m/%Y %H:%M:%S.%f'
     syncPath = '/tmp/geth-sync-progress.json'
     if os.path.isfile(syncPath):
         with open(syncPath, 'r') as sync_file:
@@ -198,22 +199,22 @@ def sync_progress(rpc_addr):
             lastPercentage = data['lastPercentage']
             lastBlocksToGo = data['lastBlocksToGo']
 
-            date_format_str = '%d/%m/%Y %H:%M:%S.%f'
             lastSyncTime = datetime.strptime(data['time'], date_format_str)
-            timeInterval = (datetime.now() - lastSyncTime).total_seconds * 1000
+            timeInterval = (datetime.now() - lastSyncTime).total_seconds()
 
     percentage = (int(status['currentBlock'], 16) / int(status['highestBlock'], 16)) * 100
     percentagePerTime = percentage - lastPercentage
     blocksToGo = int(status['highestBlock'], 16) - int(status['currentBlock'], 16)
-    bps = (lastBlocksToGo - blocksToGo) / (timeInterval / 1000)
-    etas = 100 / percentagePerTime * (timeInterval / 1000)
-    etaM = etas/60
+    bps = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else ((lastBlocksToGo - blocksToGo) / timeInterval)
+    etas = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else (blocksToGo / bps)
+    etaHours = etas / 3600
 
     result = {
         "progress": percentage,
         "blocksToGo": blocksToGo,
         "bps": bps,
-        "etaM": etaM
+        "percentageIncrease": percentagePerTime,
+        "etaHours": etaHours
     }
     print(json.dumps(result))
 
@@ -221,7 +222,7 @@ def sync_progress(rpc_addr):
     last_sync_data = {
         "lastPercentage": percentage,
         "lastBlocksToGo": blocksToGo,
-        "time": datetime.now()
+        "time": datetime.now().strftime(date_format_str)
     }
     with open(syncPath, 'w') as sync_file:
         json.dump(last_sync_data, sync_file)
