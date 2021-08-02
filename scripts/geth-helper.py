@@ -51,17 +51,6 @@ def execute_command(command):
 
 def execute_jsonrpc(rpc_address, method, params):
     req = {
-<<<<<<< HEAD
-        "jsonrpc":"2.0",
-        "method":method,
-        "params":params,
-        "id":1
-    }
-
-    h = {'Content-Type': 'application/json'}
-    result = requests.post(rpc_address, data=req, headers=h)
-    import pdb; pdb.set_trace()
-=======
         "jsonrpc": "2.0",
         "method": method,
         "params": params,
@@ -73,7 +62,6 @@ def execute_jsonrpc(rpc_address, method, params):
         return result
     else:
         result.raise_for_status()
->>>>>>> 2e3934098d844fafeb54caf5a44ec53c782ceb6e
 
 @config.command()
 @click.option('--config-path',
