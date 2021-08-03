@@ -10,16 +10,33 @@ Container File :computer: :link: Geth
 
 Container file that configures and runs [Geth](https://geth.ethereum.org): a command-line interface and API server for operating an Ethereum node.
 
-## Table of Contents
-  - [Config](#config)
+## Overview
+  - [Configuration](#configuration)
+    - [command-line flags](#command-line-flags)
+    - [config.toml](#config.toml)
   - [Operations](#operations)
-  - [Example Run](#example-run)
+    - [Check account balances](#check-account-balances)
+    - [View client sync progress](#view-client-sync-progress)
+    - [Backup and encrypt keystore](#backup-keystore)
+    - [Import keystore backup](#import-backup)
+  - [Examples](#examples)
 
-### Config
+### Configuration
 
-Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup language, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
+`geth` can be configured using either runtime command-line flags or a settings file written in [TOML](https://github.com/toml-lang/toml), a minimal configuration language format.
 
-_The content of this TOML configuration file can either be pregenerated and mounted into a container instance:_
+#### command-line flags
+
+See [here](https://geth.ethereum.org/docs/interface/command-line-options) for a list of supported flags.
+
+```bash
+# connect to Ethereum mainnet and enable HTTP-RPC service 
+docker run 0labs/geth:latest --mainnet --http
+```
+
+#### config.toml
+
+_The content of the TOML configuration file can either be pregenerated and mounted into a container instance. e.g:_
 
 ```bash
 $ cat custom-config.toml
@@ -29,27 +46,22 @@ SyncMode = "fast"
 [Node]
 DataDir = "/mnt/data/geth"
 
-[Node.P2P]
-BootstrapNodes = ["enode://a979fb575495b8d6db44f750317d0f4622bf4c2aa3365d6af7c284339968eef29b69ad0dce72a4d8db5ebb4968de0e3bec910127f134779fbcb0cb6d3331163c@52.16.188.185:30303"]
-
 # mount custom config into container
-$ docker run -it --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml \
-  0labs/geth:latest --config /tmp/config.toml
+$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/geth:latest --config /tmp/config.toml
 ```
 
-_generated from a set of environment variables, prefixed with `CONFIG`:_
+_...created from a set of environment variables, prefixed with `CONFIG`:_
 
 ```bash
 $ cat custom-config.env
 CONFIG_Eth_SyncMode="fast"
 CONFIG_Node_DataDir="/mnt/data/geth"
-CONFIG_NodedotP2P_BootstrapNodes=["enode://a979fb575495b8d6db44f750317d0f4622bf4c2aa3365d6af7c284339968eef29b69ad0dce72a4d8db5ebb4968de0e3bec910127f134779fbcb0cb6d3331163c@52.16.188.185:30303"]
 
 # mount custom config into container
 $ docker run -it --env-file custom-config.env 0labs/geth:latest
 ```
 
-_or created from both (with config environment variables taking precedence) and overriding mounted config settings:_
+_...or developed from both (with config environment variables taking precedence and overriding mounted config settings):_
 
 ```bash
 $ cat custom-config.toml
@@ -80,45 +92,46 @@ GETH_CONFIG_DIR=/mnt/etc/geth
 
 - Any configuration setting/value key-pair supported by `geth` should be expressible and properly rendered within the associated TOML config.
 
-**Note:** `<section-keyword>` should be written with the word 'dot' replacing '.' characters in config section settings (**e.g.** *Node.P2P* should be written as *NodedotP2P*).
+    `<section-keyword>` -- represents TOML config sections:
+    ```bash
+    # [TOML Section 'Shh']
+    CONFIG_Shh_<section-property>=<property-value>
+    ```
 
-  A list of configurable settings can be found [here](https://gist.github.com/0x0I/5887dae3cdf4620ca670e3b194d82cba).
+    `<section-property>` -- represents a specific TOML config section property to configure:
 
-  `<section-keyword>` -- represents TOML config sections:
-  ```bash
-  # [TOML Section 'Shh']
-  CONFIG_Shh_<section-property>=<property-value>
-  ```
+    ```bash
+    # [TOML Section 'Shh']
+    # Property: MaxMessageSize
+    CONFIG_Shh_MaxMessageSize=<property-value>
+    ```
 
-  `<section-property>` -- represents a specific TOML config section property to configure:
+    `<property-value>` -- represents property value to configure:
+    ```bash
+    # [TOML Section 'Shh']
+    # Property: MaxMessageSize
+    # Value: 2097152
+    CONFIG_Shh_MaxMessageSize=2097152
+    ```
 
-  ```bash
-  # [TOML Section 'Shh']
-  # Property: MaxMessageSize
-  CONFIG_Shh_MaxMessageSize=<property-value>
-  ```
+    A list of configurable settings can be found [here](https://gist.github.com/0x0I/5887dae3cdf4620ca670e3b194d82cba).
 
-  `<property-value>` -- represents property value to configure:
-  ```bash
-  # [TOML Section 'Shh']
-  # Property: MaxMessageSize
-  # Value: 2097152
-  CONFIG_Shh_MaxMessageSize=2097152
-  ```
+    **Note:** `<section-keyword>` should be written with the word 'dot' replacing '.' characters in config section settings (**e.g.** *Node.P2P* should be written as *NodedotP2P*).
 
 ### Operations
 
-Included within the image is a helper tool, `geth-helper`, which provides advanced capabilities for operating
-a geth client. The supported operations are as follows.
-
-- [Check account balances](#check-account-balances)
-- [Check client sync progress](#check-client-sync-progress)
-- [Backup and encrypt keystore](#backup-keystore)
-- [Import backup](#import-backup)
+...
 
 #### Check account balances
 
-...
+Display account balances of all accounts currently managed by a designated `geth` client.
+
+`$GETH_CONFIG_DIR=</path/to/configuration/dir>` (**default**: `/root/.ethereum/geth`)
+- container path where the `geth` TOML configuration should be maintained
+
+```bash
+GETH_CONFIG_DIR=/mnt/etc/geth
+```
 
 #### Check client sync progress
 
