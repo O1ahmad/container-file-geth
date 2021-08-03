@@ -4,13 +4,13 @@ version         :=      $(shell cat $(versionfile))
 image_repo      :=      0labs/geth
 
 build:
-	docker build --network host -t $(image_repo):$(version) --build-arg geth_version=$(version) .
+	docker build -t $(image_repo):$(version) --build-arg geth_version=$(version) .
 
 test:
-	docker build --network host --target test -t geth:test . && docker run --env-file test/test.env geth:test
+	docker build --target test -t geth:test . && docker run --env-file test/test.env geth:test
 
 release:
-	docker build --network host --no-cache -t $(image_repo):$(version) --build-arg geth_version=$(version) .
+	docker build --no-cache -t $(image_repo):$(version) --build-arg geth_version=$(version) .
 	docker push $(image_repo):$(version)
 
 latest:
