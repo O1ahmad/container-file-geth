@@ -16,15 +16,15 @@ For general information and guidelines for contributing to these Containerfiles 
 
 ## Pull Requests
 
-All [PRs](https://github.com/0x0I/container-file-geth/pulls) are welcome! :+1: The following guidelines and CI pipeline are provided for validating container functionality and avoiding regressions for each submitted request:
+All [PRs](https://github.com/0x0I/container-file-geth/pulls) are welcome! :+1: The following guidelines and CI pipeline are provided for validating container functionality and avoiding regressions for each submitted request.
 
-**Note:** to build and test this container/image, a working copy of either the `docker` or `podman` container runtimes/engines are necessary.
+**Note:** to build and test this container/image, a working container runtime/engine (e.g. `docker` or `podman`) is necessary.
 
 #### CI Pipeline
 
 | Step | Description | Dependencies | Command |
 | --- | --- | --- | --- |
-| :wrench: `testing` | Utilizing the [Goss](https://github.com/aelsabbahy/goss/tree/master/extras/dgoss) testing framework, testing of this container file should be executed prior to PR submission to validate new modifications and identify/prevent regressions. | *N/A* | `docker build --target test -t <tag> && docker run <tag>` |
+| :wrench: `testing` | Using the [Goss](https://github.com/aelsabbahy/goss/tree/master/extras/dgoss) testing framework, testing of this container file should be executed prior to PR submission to validate new modifications and identify/prevent regressions. | *N/A* | `make test` |
 | :traffic_light: `Continuous Integration (CI)` | Automatic E2E testing of this role is accomplished leveraging the [Circle-CI](https://app.circleci.com/pipelines/github/0x0I/container-file-geth) test infrastructure platform and is executed on each pull request. Requests should not be merged unless all tests pass or the community approves otherwise. | *N/A* | *see* [.circle.yml](https://raw.githubusercontent.com/0x0I/container-file-geth/master/.circleci/config.yml) for additional details |
 
 ## Issues
@@ -39,8 +39,8 @@ Reference the following issue reporting guide for more details:
 | --- | --- |
 | :arrow_up: `:enhancement:` | Feature requests. |
 | :bug: `:bug:` | Confirmed bugs or reports that are very likely to be bugs. |
-| :question: `:question:` | Questions more than bug reports or feature requests (e.g. how do I do X). |
-| :eyeglasses: :heartpulse:`:feedback:` | General feedback more than bug reports or feature requests. |
+| :question: `:question:` | Questions about usage and operations (e.g. how do I do X). |
+| :eyeglasses: :heartpulse:`:feedback:` | General feedback regarding the project. |
 
 ## Workflow and backlog
 
