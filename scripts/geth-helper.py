@@ -106,11 +106,13 @@ def customize(config_path):
 @account.command()
 @click.argument('password')
 @click.option('--keystore-dir',
-              default=DEFAULT_GETH_KEYSTORE_DIR,
-              help='path to geth wallet key store')
+              default=lambda: os.environ.get("KEYSTORE_DIR", DEFAULT_GETH_KEYSTORE_DIR),
+              show_default=DEFAULT_GETH_KEYSTORE_DIR,
+              help='path to import a backed-up geth wallet key store')
 @click.option('--backup-path',
-              default=DEFAULT_GETH_BACKUP_PATH,
-              help='path to backup geth wallet key stores')
+              default=lambda: os.environ.get("BACKUP_PATH", DEFAULT_GETH_BACKUP_PATH),
+              show_default=DEFAULT_GETH_BACKUP_PATH,
+              help='path containing backup of a geth wallet key store')
 def backup_keystore(password, keystore_dir, backup_path):
     """Encrypt and backup wallet keystores.
 
@@ -130,10 +132,12 @@ def backup_keystore(password, keystore_dir, backup_path):
 @account.command()
 @click.argument('password')
 @click.option('--keystore-dir',
-              default=DEFAULT_GETH_KEYSTORE_DIR,
+              default=lambda: os.environ.get("KEYSTORE_DIR", DEFAULT_GETH_KEYSTORE_DIR),
+              show_default=DEFAULT_GETH_KEYSTORE_DIR,
               help='path to import a backed-up geth wallet key store')
 @click.option('--backup-path',
-              default=DEFAULT_GETH_BACKUP_PATH,
+              default=lambda: os.environ.get("BACKUP_PATH", DEFAULT_GETH_BACKUP_PATH),
+              show_default=DEFAULT_GETH_BACKUP_PATH,
               help='path containing backup of a geth wallet key store')
 def import_backup(password, keystore_dir, backup_path):
     """Decrypt and import wallet keystores backups.
@@ -155,7 +159,8 @@ def import_backup(password, keystore_dir, backup_path):
 
 @status.command()
 @click.option('--rpc-addr',
-              default=DEFAULT_RPC_ADDRESS,
+              default=lambda: os.environ.get("RPC_ADDRESS", DEFAULT_RPC_ADDRESS),
+              show_default=DEFAULT_RPC_ADDRESS,
               help='server address to query for RPC calls')
 def check_balances(rpc_addr):
     """Check all client managed account balances
@@ -178,13 +183,13 @@ def check_balances(rpc_addr):
 
 @status.command()
 @click.option('--rpc-addr',
-              default=DEFAULT_RPC_ADDRESS,
+              default=lambda: os.environ.get("RPC_ADDRESS", DEFAULT_RPC_ADDRESS),
+              show_default=DEFAULT_RPC_ADDRESS,
               help='server address to query for RPC calls')
 def sync_progress(rpc_addr):
     """Check client blockchain sync status and process
     """
 
-    import pdb; pdb.set_trace()
     status = execute_jsonrpc(
         rpc_addr,
         "eth_syncing",

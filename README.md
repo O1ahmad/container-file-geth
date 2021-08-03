@@ -10,83 +10,43 @@ Container File :computer: :link: Geth
 
 Container file that configures and runs [Geth](https://geth.ethereum.org): a command-line interface and API server for operating an Ethereum node.
 
-## Overview
-  - [Configuration](#configuration)
-    - [command-line flags](#command-line-flags)
-    - [config.toml](#config.toml)
-  - [Operations](#operations)
-    - [Check account balances](#check-account-balances)
-    - [View client sync progress](#view-client-sync-progress)
-    - [Backup and encrypt keystore](#backup-keystore)
-    - [Import keystore backup](#import-backup)
+**Overview**
+  - [Requirements](#requirements)
+  - [Environment Variables](#environment-variables)
+      - [Config](#config)
+      - [Operations](#operations)
+        - [check account balances](#check-account-balances)
+        - [view client sync progress](#view-client-sync-progress)
+        - [backup and encrypt keystore](#backup-and-encrypt-keystore)
+        - [import backup](#import-backup)
   - [Examples](#examples)
+  - [License](#license)
+  - [Author Information](#author-information)
 
-### Configuration
+Requirements
+------------
 
-`geth` can be configured using either runtime command-line flags or a settings file written in [TOML](https://github.com/toml-lang/toml), a minimal configuration language format.
+None
 
-#### command-line flags
+Environment Variables
+--------------
 
-See [here](https://geth.ethereum.org/docs/interface/command-line-options) for a list of supported flags.
+Variables are available and organized according to the following software & machine provisioning stages:
+* _config_
+* _operations_
 
-```bash
-# connect to Ethereum mainnet and enable HTTP-RPC service 
-docker run 0labs/geth:latest --mainnet --http
-```
+### :page_with_curl: Config
 
-#### config.toml
+Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup format, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
 
-_The content of the TOML configuration file can either be pregenerated and mounted into a container instance. e.g:_
-
-```bash
-$ cat custom-config.toml
-[Eth]
-SyncMode = "fast"
-
-[Node]
-DataDir = "/mnt/data/geth"
-
-# mount custom config into container
-$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/geth:latest --config /tmp/config.toml
-```
-
-_...created from a set of environment variables, prefixed with `CONFIG`:_
-
-```bash
-$ cat custom-config.env
-CONFIG_Eth_SyncMode="fast"
-CONFIG_Node_DataDir="/mnt/data/geth"
-
-# mount custom config into container
-$ docker run -it --env-file custom-config.env 0labs/geth:latest
-```
-
-_...or developed from both (with config environment variables taking precedence and overriding mounted config settings):_
-
-```bash
-$ cat custom-config.toml
-[Eth]
-SyncMode = "fast"
-
-[Node]
-DataDir = "/mnt/data/geth"
-
-$ cat custom-config.env
-GETH_CONFIG_DIR=/tmp/geth
-CONFIG_Eth_SyncMode="full"
-
-# mount custom config into container
-$ docker run -it --env-file custom-config.env \
-  --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/geth/config.toml \
-  0labs/geth:latest --config /tmp/geth/config.toml
-```
+_The following variables can be customized to manage the location and content of this TOML configuration:_
 
 `$GETH_CONFIG_DIR=</path/to/configuration/dir>` (**default**: `/root/.ethereum/geth`)
 - container path where the `geth` TOML configuration should be maintained
 
-```bash
-GETH_CONFIG_DIR=/mnt/etc/geth
-```
+  ```bash
+  GETH_CONFIG_DIR=/mnt/etc/geth
+  ```
 
 `$CONFIG_<section-keyword>_<section-property> = <property-value (string)>` **default**: *None*
 
@@ -118,24 +78,111 @@ GETH_CONFIG_DIR=/mnt/etc/geth
 
     **Note:** `<section-keyword>` should be written with the word 'dot' replacing '.' characters in config section settings (**e.g.** *Node.P2P* should be written as *NodedotP2P*).
 
-### Operations
+_Additionally, the content of the TOML configuration file can either be pregenerated and mounted into a container instance:_
 
-...
+```bash
+$ cat custom-config.toml
+[Eth]
+SyncMode = "fast"
+
+[Node]
+DataDir = "/mnt/data/geth"
+
+# mount custom config into container
+$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/geth:latest --config /tmp/config.toml
+```
+
+_...or developed from both a mounted config and injected environment variables (with envvars taking precedence and overriding mounted config settings):_
+
+```bash
+$ cat custom-config.toml
+[Eth]
+SyncMode = "fast"
+
+[Node]
+DataDir = "/mnt/data/geth"
+
+# mount custom config into container
+$ docker run -it --env GETH_CONFIG_DIR=/tmp/geth --env CONFIG_Eth_SyncMode=full \
+  --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/geth/config.toml \
+  0labs/geth:latest --config /tmp/geth/config.toml
+```
+
+_Moreover, see [here](https://geth.ethereum.org/docs/interface/command-line-options) for a list of supported flags to set as runtime command-line flags._
+
+```bash
+# connect to Ethereum mainnet and enable HTTP-RPC service 
+docker run 0labs/geth:latest --mainnet --http
+```
+
+### :flashlight: Operations
+
+To assist with managing a `geth` client and interfacing with the *Ethereum* network, the following utility functions have been included within the image.
 
 #### Check account balances
 
-Display account balances of all accounts currently managed by a designated `geth` client.
+Display account balances of all accounts currently managed by a designated `geth` RPC server.
 
-`$GETH_CONFIG_DIR=</path/to/configuration/dir>` (**default**: `/root/.ethereum/geth`)
-- container path where the `geth` TOML configuration should be maintained
+```
+$ geth-helper status check-balances --help
+Usage: geth-helper status check-balances [OPTIONS]
 
-```bash
-GETH_CONFIG_DIR=/mnt/etc/geth
+  Check all client managed account balances
+
+Options:
+  --rpc-addr TEXT  server address to query for RPC calls  [default:
+                   (http://localhost:8545)]
+  --help           Show this message and exit.
 ```
 
-#### Check client sync progress
+`$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
+- `geth` RPC server address for querying network state
 
-...
+##### example
+
+```bash
+docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-helper status check-balances
+```
+
+#### View client sync progress
+
+View current progress of an RPC server's sync with the network if not already caughtup.
+
+```
+$ geth-helper status sync-progress --help
+Usage: geth-helper status sync-progress [OPTIONS]
+
+  Check client blockchain sync status and process
+
+Options:
+  --rpc-addr TEXT  server address to query for RPC calls  [default:
+                   (http://localhost:8545)]
+  --help           Show this message and exit
+```
+
+`$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
+- `geth` RPC server address for querying network state
+
+The progress output consists of a JSON block with the following properties:
+  * __progress__ - percent (%) of total blocks processed and synced by the server
+  * __blocksToGo__ - number of blocks left to process/sync
+  * __bps__: rate of blocks processed/synced per second
+  * __percentageIncrease__ - progress percentage increase since last view
+  * __etaHours__ - estimated time (hours) to complete sync
+
+##### example
+
+```bash
+$ docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-helper status sync-progress [--rpc-address geth-rpc.live.01labs.net]
+
+  {
+   "progress":66.8226399830796,
+   "blocksToGo":4298054,
+   "bps":5.943412173361741,
+   "percentageIncrease":0.0018371597201962686,
+   "etaHours":200.87852803477827
+  }
+```
 
 #### Backup and encrypt keystore
 
