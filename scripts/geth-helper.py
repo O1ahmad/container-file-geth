@@ -208,12 +208,14 @@ def sync_progress(rpc_addr):
     bps = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else ((lastBlocksToGo - blocksToGo) / timeInterval)
     etas = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else (blocksToGo / bps)
     etaHours = etas / 3600
+    stateProgress = (int(status['knownStaates'], 16) / int(status['pulledStates'], 16)) * 100
 
     result = {
         "progress": percentage,
         "blocksToGo": blocksToGo,
         "bps": bps,
         "percentageIncrease": percentagePerTime,
+        "stateProgress": stateProgress,
         "etaHours": etaHours
     }
     print(json.dumps(result))

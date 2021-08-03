@@ -8,31 +8,79 @@ Container File :computer: :link: Geth
 [![Docker Pulls](https://img.shields.io/docker/pulls/0labs/geth?style=flat)](https://hub.docker.com/repository/docker/0labs/geth)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
-**Table of Contents**
-  - [Environment Variables](#environment-variables)
-      - [Config](#config)
-      - [Operations](#operations)
-  - [Example Run](#example-run)
-  - [License](#license)
-  - [Author Information](#author-information)
-
 Container file that configures and runs [Geth](https://geth.ethereum.org): a command-line interface and API server for operating an Ethereum node.
 
-Environment Variables
---------------
-Variables are available and organized according to the following software & machine provisioning stages:
-* _config_
-* _operations_
+## Table of Contents
+  - [Config](#config)
+  - [Operations](#operations)
+  - [Example Run](#example-run)
 
-#### Config
+### Config
 
 Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup language, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
 
-_The following variables can be customized to manage the content of this TOML configuration:_
+_The content of this TOML configuration file can either be pregenerated and mounted into a container instance:_
+
+```bash
+$ cat custom-config.toml
+[Eth]
+SyncMode = "fast"
+
+[Node]
+DataDir = "/mnt/data/geth"
+
+[Node.P2P]
+BootstrapNodes = ["enode://a979fb575495b8d6db44f750317d0f4622bf4c2aa3365d6af7c284339968eef29b69ad0dce72a4d8db5ebb4968de0e3bec910127f134779fbcb0cb6d3331163c@52.16.188.185:30303"]
+
+# mount custom config into container
+$ docker run -it --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml \
+  0labs/geth:latest --config /tmp/config.toml
+```
+
+_generated from a set of environment variables, prefixed with `CONFIG`:_
+
+```bash
+$ cat custom-config.env
+CONFIG_Eth_SyncMode="fast"
+CONFIG_Node_DataDir="/mnt/data/geth"
+CONFIG_NodedotP2P_BootstrapNodes=["enode://a979fb575495b8d6db44f750317d0f4622bf4c2aa3365d6af7c284339968eef29b69ad0dce72a4d8db5ebb4968de0e3bec910127f134779fbcb0cb6d3331163c@52.16.188.185:30303"]
+
+# mount custom config into container
+$ docker run -it --env-file custom-config.env 0labs/geth:latest
+```
+
+_or created from both (with config environment variables taking precedence) and overriding mounted config settings:_
+
+```bash
+$ cat custom-config.toml
+[Eth]
+SyncMode = "fast"
+
+[Node]
+DataDir = "/mnt/data/geth"
+
+$ cat custom-config.env
+GETH_CONFIG_DIR=/tmp/geth
+CONFIG_Eth_SyncMode="full"
+
+# mount custom config into container
+$ docker run -it --env-file custom-config.env \
+  --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/geth/config.toml \
+  0labs/geth:latest --config /tmp/geth/config.toml
+```
+
+`$GETH_CONFIG_DIR=</path/to/configuration/dir>` (**default**: `/root/.ethereum/geth`)
+- container path where the `geth` TOML configuration should be maintained
+
+```bash
+GETH_CONFIG_DIR=/mnt/etc/geth
+```
 
 `$CONFIG_<section-keyword>_<section-property> = <property-value (string)>` **default**: *None*
 
-* Any configuration setting/value key-pair supported by `geth` should be expressible within each `CONFIG_*` environment variable and properly rendered within the associated TOML config. **Note:** `<section-keyword>` along with the other property specifications should be written as expected to be rendered within the associated `TOML` config (**e.g.** *Node.P2P*).
+- Any configuration setting/value key-pair supported by `geth` should be expressible and properly rendered within the associated TOML config.
+
+**Note:** `<section-keyword>` should be written with the word 'dot' replacing '.' characters in config section settings (**e.g.** *Node.P2P* should be written as *NodedotP2P*).
 
   A list of configurable settings can be found [here](https://gist.github.com/0x0I/5887dae3cdf4620ca670e3b194d82cba).
 
@@ -58,20 +106,43 @@ _The following variables can be customized to manage the content of this TOML co
   CONFIG_Shh_MaxMessageSize=2097152
   ```
 
-#### Operations
+### Operations
+
+Included within the image is a helper tool, `geth-helper`, which provides advanced capabilities for operating
+a geth client. The supported operations are as follows.
+
+- [Check account balances](#check-account-balances)
+- [Check client sync progress](#check-client-sync-progress)
+- [Backup and encrypt keystore](#backup-keystore)
+- [Import backup](#import-backup)
+
+#### Check account balances
+
+...
+
+#### Check client sync progress
+
+...
+
+#### Backup and encrypt keystore
+
+...
+
+#### Import backup
 
 ...
 
 Example Run
 ----------------
-Basic setup with defaults:
+
+Create account:
 ```
 docker run -it 0labs/geth:latest
 ```
 
 Launch an Ethereum light client and connect it to the Rinkeby PoA (Proof of Authority) test network:
 ```
-docker run --env CONFIG_Eth_SyncMode=light 0labs/geth --rinkeby
+docker run --env CONFIG_Eth_SyncMode=light 0labs/geth:latest --rinkeby
 ```
 
 Run a full Ethereum node using "fast" sync-mode (only process most recent transactions), enabling both the RPC server interface and overriding the (block) data directory:
@@ -79,7 +150,7 @@ Run a full Ethereum node using "fast" sync-mode (only process most recent transa
 docker run --env CONFIG_Eth_SyncMode=fast \
            --env CONFIG_Node_DataDir="/mnt/geth/data" \
            --volume geth_data:/root/.ethereum
-           0labs/geth --rpc
+           0labs/geth:latest --rpc
 ```
 
 License
