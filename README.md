@@ -138,10 +138,25 @@ Options:
 `$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
 - `geth` RPC server address for querying network state
 
+The balances output consists of a JSON list of entries with the following properties:
+  * __account__ - account owner's address
+  * __balance__ - total balance of account in decimal
+
 ##### example
 
 ```bash
 docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-helper status check-balances
+
+[
+  {
+   "account": 0x652eD9d222eeA1Ad843efab01E60C29bF2CF6E4c,
+   "balance": 1000000
+  },
+  {
+   "account": 0x256eDb444eeA1Ad876efaa160E60C29bF8CH3D9a,
+   "balance": 2000000
+  }
+]
 ```
 
 #### View client sync progress
@@ -157,7 +172,7 @@ Usage: geth-helper status sync-progress [OPTIONS]
 Options:
   --rpc-addr TEXT  server address to query for RPC calls  [default:
                    (http://localhost:8545)]
-  --help           Show this message and exit
+  --help           Show this message and exit.
 ```
 
 `$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
@@ -173,7 +188,7 @@ The progress output consists of a JSON block with the following properties:
 ##### example
 
 ```bash
-$ docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-helper status sync-progress [--rpc-address geth-rpc.live.01labs.net]
+$ docker exec 0labs/geth:latest geth-helper status sync-progress
 
   {
    "progress":66.8226399830796,
@@ -186,31 +201,110 @@ $ docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-
 
 #### Backup and encrypt keystore
 
-...
+Encrypt and backup client keystore to designated container/host location.
+
+```
+$ geth-helper account backup-keystore --help
+Usage: geth-helper account backup-keystore [OPTIONS] PASSWORD
+
+  Encrypt and backup wallet keystores.
+
+  PASSWORD password used to encrypt and secure keystore backups
+
+Options:
+  --keystore-dir TEXT  path to import a backed-up geth wallet key store
+                       [default: (/root/.ethereum/keystore)]
+  --backup-path TEXT   path containing backup of a geth wallet key store
+                       [default: (/tmp/backups)]
+  --help               Show this message and exit.
+```
+
+`$password=<string>` (**required**)
+- password used to encrypt and secure keystore backups. Keystore backup is encrypted using the `zip` utility's password protection feature.
+
+`$KEYSTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
+- container location to retrieve keys from
+
+`$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
+- container location to store encrypted keystore backups. **Note:** Using container `volume/mounts`, keystores can be backed-up to all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
+
+`$AUTO_BACKUP_KEYSTORE=<boolean>` (**default**: `false`)
+- automatically backup keystore to $BACKUP_PATH location every $BACKUP_INTERVAL seconds
+
+`$BACKUP_INTERVAL=<cron-schedule>` (**default**: `* * * * * (hourly)`)
+- keystore backup frequency based on cron schedules
+
+`$BACKUP_PASSWORD=<string>` (**required**)
+- encryption password for automatic backup operations - see *$password*
 
 #### Import backup
 
-...
+Decrypt and import backed-up keystore to designated container/host keystore location.
+
+```
+$ geth-helper account import-backup --help
+Usage: geth-helper account import-backup [OPTIONS] PASSWORD
+
+  Decrypt and import wallet keystores backups.
+
+  PASSWORD password used to decrypt and import keystore backups
+
+Options:
+  --keystore-dir TEXT  directory to import a backed-up geth wallet key store
+                       [default: (/root/.ethereum/keystore)]
+  --backup-path TEXT   path containing backup of a geth wallet key store
+                       [default: (/tmp/backups/wallet-backup.zip)]
+  --help               Show this message and exit.
+```
+
+`$password=<string>` (**required**)
+- password used to decrypt keystore backups. Keystore backup is decrypted using the `zip/unzip` utility's password protection feature.
+
+`$KEYSTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
+- container location to import keys
+
+`$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
+- container location to retrieve keystore backup. **Note:** Using container `volume/mounts`, keystores can be imported from all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
 
 Example Run
 ----------------
 
-Create account:
+* Create account and bind data/keystore directory to host path:
 ```
-docker run -it 0labs/geth:latest
-```
-
-Launch an Ethereum light client and connect it to the Rinkeby PoA (Proof of Authority) test network:
-```
-docker run --env CONFIG_Eth_SyncMode=light 0labs/geth:latest --rinkeby
+docker run -it -v /mnt/geth/data:/root/.ethereum/ 0labs/geth:latest account new --password <secret>
 ```
 
-Run a full Ethereum node using "fast" sync-mode (only process most recent transactions), enabling both the RPC server interface and overriding the (block) data directory:
+* Launch an Ethereum light client and connect it to the Ropsten, best current like-for-like representation of Ethereum, PoW (Proof of Work) test network:
 ```
-docker run --env CONFIG_Eth_SyncMode=fast \
-           --env CONFIG_Node_DataDir="/mnt/geth/data" \
-           --volume geth_data:/root/.ethereum
-           0labs/geth:latest --rpc
+docker run --env CONFIG_Eth_SyncMode=light 0labs/geth:latest --ropsten
+```
+
+* View sync progress of active local full-node:
+```
+id=$(docker run --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest --mainnet)
+
+docker exec $id geth-helper status sync-progress
+```
+
+* Run *fast* sync node with automatic daily backups of custom keystore directory:
+```
+docker run --env CONFIG_Eth_SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
+           --env AUTO_BACKUP_KEYSTORE=true --env BACKUP_INTERVAL="0 * * * *" \
+           --env BACKUP_PASSWORD=<secret> \
+  --volume ~/.ethereum/keystore:/tmp/keystore 0labs/geth:latest
+```
+
+* Import account from keystore backup stored on an attached USB drive:
+```
+id=$(docker run --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest --mainnet)
+
+docker exec --volume /path/to/usb/mount/keys:/tmp/keys \
+            --volume ~/.ethereum:/root/.ethereum \
+            --env BACKUP_PASSWORD=<secret>
+            --env BACKUP_PATH=/tmp/keys/my-wallets.zip
+            $id geth-helper account import-backup
+
+docker exec --volume ~/.ethereum:/root/.ethereum $id account import /root/.ethereum/keystore/a-wallet
 ```
 
 License

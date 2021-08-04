@@ -34,7 +34,7 @@ def status():
 DEFAULT_GETH_CONFIG_PATH = "/root/.ethereum/geth/config.toml"
 DEFAULT_GETH_DATADIR = "/root/.ethereum"
 DEFAULT_GETH_KEYSTORE_DIR = "/root/.ethereum/keystore"
-DEFAULT_GETH_BACKUP_PATH = "/tmp/backups"
+DEFAULT_GETH_BACKUP_PATH = "/tmp/backups/wallet-backup.zip"
 DEFAULT_RPC_ADDRESS = "http://localhost:8545"
 
 def execute_command(command):
@@ -108,11 +108,11 @@ def customize(config_path):
 @click.option('--keystore-dir',
               default=lambda: os.environ.get("KEYSTORE_DIR", DEFAULT_GETH_KEYSTORE_DIR),
               show_default=DEFAULT_GETH_KEYSTORE_DIR,
-              help='path to import a backed-up geth wallet key store')
+              help='geth wallet key store directory to backup')
 @click.option('--backup-path',
               default=lambda: os.environ.get("BACKUP_PATH", DEFAULT_GETH_BACKUP_PATH),
               show_default=DEFAULT_GETH_BACKUP_PATH,
-              help='path containing backup of a geth wallet key store')
+              help='path to create geth wallet key store backup at')
 def backup_keystore(password, keystore_dir, backup_path):
     """Encrypt and backup wallet keystores.
 
@@ -134,7 +134,7 @@ def backup_keystore(password, keystore_dir, backup_path):
 @click.option('--keystore-dir',
               default=lambda: os.environ.get("KEYSTORE_DIR", DEFAULT_GETH_KEYSTORE_DIR),
               show_default=DEFAULT_GETH_KEYSTORE_DIR,
-              help='path to import a backed-up geth wallet key store')
+              help='directory to import a backed-up geth wallet key store')
 @click.option('--backup-path',
               default=lambda: os.environ.get("BACKUP_PATH", DEFAULT_GETH_BACKUP_PATH),
               show_default=DEFAULT_GETH_BACKUP_PATH,
@@ -211,9 +211,9 @@ def sync_progress(rpc_addr):
     percentagePerTime = percentage - lastPercentage
     blocksToGo = int(status['highestBlock'], 16) - int(status['currentBlock'], 16)
     bps = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else ((lastBlocksToGo - blocksToGo) / timeInterval)
-    etas = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else (blocksToGo / bps)
+    etas = 0 if bps == 0 else (blocksToGo / bps)
     etaHours = etas / 3600
-    stateProgress = (int(status['knownStaates'], 16) / int(status['pulledStates'], 16)) * 100
+    stateProgress = 0 if int(status['knownStates'], 16) == 0 else (int(status['pulledStates'], 16) / int(status['knownStates'], 16)) * 100
 
     result = {
         "progress": percentage,
