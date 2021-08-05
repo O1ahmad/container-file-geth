@@ -1,13 +1,18 @@
 # test resource verification spec
 file:
-  /opt/geth/geth:
+  /usr/local/bin/geth:
     exists: true
     mode: "0755"
     owner: root
     group: root
     filetype: file
-file:
-  /mnt/geth/geth.toml:
+  /usr/local/bin/geth-helper:
+    exists: true
+    mode: "0775"
+    owner: root
+    group: root
+    filetype: file
+  /root/.ethereum/geth/config.toml:
     exists: true
     mode: "0644"
     owner: root
@@ -20,11 +25,32 @@ file:
       - "HTTPModules ="
       - "DataDir ="
       - "[Node.P2P]"
-      - "MaxPeers ="  
-command:
-  /opt/geth/geth --help:
-    exit-status: 0
-process:
-  geth:
+      - "MaxPeers ="
+  /tmp/backups:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: directory
+package:
+  curl:
+    installed: true
+  cron:
+    installed: true
+  unzip:
+    installed: true
+  zip:
+    installed: true
+service:
+  cron:
+    enabled: true
     running: true
-    skip: false
+command:
+  geth --help:
+    exit-status: 0
+  geth-helper --help:
+    exit-status: 0
+  crontab -l:
+    exit-status: 0
+    stdout:
+      - geth-helper account backup-keystore

@@ -4,28 +4,24 @@
 Container File :computer: :link: Geth
 =========
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/0x0I/container-file-geth?color=yellow)
-[![Build Status](https://travis-ci.org/0x0I/container-file-geth.svg?branch=master)](https://travis-ci.org/0x0I/container-file-geth)
-[![Docker Pulls](https://img.shields.io/docker/pulls/0labs/0x01.geth?style=flat)](https://hub.docker.com/repository/docker/0labs/0x01.geth)
+[![0x0I](https://circleci.com/gh/0x0I/container-file-geth.svg?style=svg)](https://circleci.com/gh/0x0I/container-file-geth)
+[![Docker Pulls](https://img.shields.io/docker/pulls/0labs/geth?style=flat)](https://hub.docker.com/repository/docker/0labs/geth)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
-**Table of Contents**
-  - [Supported Platforms](#supported-platforms)
+Container file that configures and runs [Geth](https://geth.ethereum.org): a command-line interface and API server for operating an Ethereum node.
+
+**Overview**
   - [Requirements](#requirements)
   - [Environment Variables](#environment-variables)
       - [Config](#config)
-      - [Launch](#launch)
-  - [Dependencies](#dependencies)
-  - [Example Run](#example-run)
+      - [Operations](#operations)
+        - [check account balances](#check-account-balances)
+        - [view client sync progress](#view-client-sync-progress)
+        - [backup and encrypt keystore](#backup-and-encrypt-keystore)
+        - [import backup](#import-backup)
+  - [Examples](#examples)
   - [License](#license)
   - [Author Information](#author-information)
-
-Container file that installs, configures and runs [Geth](https://geth.ethereum.org): a command-line interface and API server for operating an Ethereum node.
-
-##### Supported Platforms:
-```
-* Redhat(CentOS/Fedora)
-* Debian
-```
 
 Requirements
 ------------
@@ -34,109 +30,281 @@ None
 
 Environment Variables
 --------------
+
 Variables are available and organized according to the following software & machine provisioning stages:
 * _config_
-* _launch_
+* _operations_
 
-#### Config
+### :page_with_curl: Config
 
-Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup language, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
+Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup format, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
 
 _The following variables can be customized to manage the location and content of this TOML configuration:_
 
-`$GETH_CONFIG_DIR=</path/to/configuration/dir>` (**default**: `/etc/geth`)
-- path on target host where the `geth` TOML configuration should be stored
+`$GETH_CONFIG_DIR=</path/to/configuration/dir>` (**default**: `/root/.ethereum/geth`)
+- container path where the `geth` TOML configuration should be maintained
 
-```bash
-GETH_CONFIG_DIR=/mnt/etc/geth
-```
- 
+  ```bash
+  GETH_CONFIG_DIR=/mnt/etc/geth
+  ```
+
 `$CONFIG_<section-keyword>_<section-property> = <property-value (string)>` **default**: *None*
 
-* Any configuration setting/value key-pair supported by `geth` should be expressible within each `CONFIG_*` environment variable and properly rendered within the associated TOML config. **Note:** `<section-keyword>` along with the other property specifications should be written as expected to be rendered within the associated `TOML` config (**e.g.** *Node.P2P*).
+- Any configuration setting/value key-pair supported by `geth` should be expressible and properly rendered within the associated TOML config.
 
-Furthermore, configuration is not constrained by hardcoded author defined defaults or limited by pre-baked templating. If the config section, setting and value are recognized by the `geth` tool, :thumbsup: to define within an environnment variable according to the following syntax.
+    `<section-keyword>` -- represents TOML config sections:
+    ```bash
+    # [TOML Section 'Shh']
+    CONFIG_Shh_<section-property>=<property-value>
+    ```
 
-  A list of configurable settings can be found [here](https://gist.github.com/0x0I/5887dae3cdf4620ca670e3b194d82cba).
+    `<section-property>` -- represents a specific TOML config section property to configure:
 
-  `<section-keyword>` -- represents TOML config sections:
-  ```bash
-  # [TOML Section 'Shh']
-  CONFIG_Shh_<section-property>=<property-value>
-  ```
-  
-  `<section-property>` -- represents a specific TOML config section property to configure:
-  
-  ```bash
-  # [TOML Section 'Shh']
-  # Property: MaxMessageSize
-  CONFIG_Shh_MaxMessageSize=<property-value>
-  ```
+    ```bash
+    # [TOML Section 'Shh']
+    # Property: MaxMessageSize
+    CONFIG_Shh_MaxMessageSize=<property-value>
+    ```
 
-  `<property-value>` -- represents property value to configure:
-  ```bash
-  # [TOML Section 'Shh']
-  # Property: MaxMessageSize
-  # Value: 2097152
-  CONFIG_Shh_MaxMessageSize=2097152
-  ```
+    `<property-value>` -- represents property value to configure:
+    ```bash
+    # [TOML Section 'Shh']
+    # Property: MaxMessageSize
+    # Value: 2097152
+    CONFIG_Shh_MaxMessageSize=2097152
+    ```
 
-#### Launch
+    A list of configurable settings can be found [here](https://gist.github.com/0x0I/5887dae3cdf4620ca670e3b194d82cba).
 
-Running the `geth` client and API server, either in its RPC, IPC or WS-RPC form, is accomplished utilizing official **Geth** binaries published and available [here](https://github.com/ethereum/go-ethereum/releases). Launched subject to the configuration and execution potential provided by the underlying application, the `geth` client and API servers can be set to adhere to system administrative policies right for your environment and organization.
+    **Note:** `<section-keyword>` should be written with the word 'dot' replacing '.' characters in config section settings (**e.g.** *Node.P2P* should be written as *NodedotP2P*).
 
-_The following variables can be customized to manage Geth's execution profile/policy:_
+_Additionally, the content of the TOML configuration file can either be pregenerated and mounted into a container instance:_
 
-`$EXTRA_ARGS: <geth-cli-options>` (**default**: *NONE*)
-- list of `geth` commandline arguments to pass to the binary at runtime for customizing launch.
+```bash
+$ cat custom-config.toml
+[Eth]
+SyncMode = "fast"
 
-Supporting full expression of `geth`'s cli, this variable enables the role of target hosts to be customized according to the user's specification; whether to activate a particular API protocol listener, connect to a pre-configured Ethereum test or production network or whatever is supported by `geth`.
+[Node]
+DataDir = "/mnt/data/geth"
 
-  A list of available command-line options can be found [here](https://gist.github.com/0x0I/a06e231d4fd0509ddf3a44f8499a2941).
+# mount custom config into container
+$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/geth:latest --config /tmp/config.toml
+```
 
-##### Examples
+_...or developed from both a mounted config and injected environment variables (with envvars taking precedence and overriding mounted config settings):_
 
-  Connect to either the Ropsten PoW(proof-of-work) or Rinkeby PoA(proof-of-authory) pre-configured test network:
-  ```bash
-  EXTRA_ARGS=--testnet # POW
-  # ...or...
-  EXTRA_ARGS=--rinkeby # POA
-  ```
+```bash
+$ cat custom-config.toml
+[Eth]
+SyncMode = "fast"
 
-  Enhance logging and debugging capabilities for troubleshooting issues:
-  ```bash
-  EXTRA_ARGS=--debug --verbosity 5 --trace /tmp/geth.trace
-  ```
+[Node]
+DataDir = "/mnt/data/geth"
 
-  Enable client and server profiling for analytics and testing purposes:
-  ```
-  EXTRA_ARGS=--pprof --memprofilerate 1048576 --blockprofilerate 1 --cpuprofile /tmp/geth-cpu-profile
-  ```
+# mount custom config into container
+$ docker run -it --env GETH_CONFIG_DIR=/tmp/geth --env CONFIG_Eth_SyncMode=full \
+  --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/geth/config.toml \
+  0labs/geth:latest --config /tmp/geth/config.toml
+```
 
-Dependencies
-------------
+_Moreover, see [here](https://geth.ethereum.org/docs/interface/command-line-options) for a list of supported flags to set as runtime command-line flags._
 
-None
+```bash
+# connect to Ethereum mainnet and enable HTTP-RPC service 
+docker run 0labs/geth:latest --mainnet --http
+```
+
+### :flashlight: Operations
+
+To assist with managing a `geth` client and interfacing with the *Ethereum* network, the following utility functions have been included within the image.
+
+#### Check account balances
+
+Display account balances of all accounts currently managed by a designated `geth` RPC server.
+
+```
+$ geth-helper status check-balances --help
+Usage: geth-helper status check-balances [OPTIONS]
+
+  Check all client managed account balances
+
+Options:
+  --rpc-addr TEXT  server address to query for RPC calls  [default:
+                   (http://localhost:8545)]
+  --help           Show this message and exit.
+```
+
+`$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
+- `geth` RPC server address for querying network state
+
+The balances output consists of a JSON list of entries with the following properties:
+  * __account__ - account owner's address
+  * __balance__ - total balance of account in decimal
+
+##### example
+
+```bash
+docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-helper status check-balances
+
+[
+  {
+   "account": 0x652eD9d222eeA1Ad843efab01E60C29bF2CF6E4c,
+   "balance": 1000000
+  },
+  {
+   "account": 0x256eDb444eeA1Ad876efaa160E60C29bF8CH3D9a,
+   "balance": 2000000
+  }
+]
+```
+
+#### View client sync progress
+
+View current progress of an RPC server's sync with the network if not already caughtup.
+
+```
+$ geth-helper status sync-progress --help
+Usage: geth-helper status sync-progress [OPTIONS]
+
+  Check client blockchain sync status and process
+
+Options:
+  --rpc-addr TEXT  server address to query for RPC calls  [default:
+                   (http://localhost:8545)]
+  --help           Show this message and exit.
+```
+
+`$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
+- `geth` RPC server address for querying network state
+
+The progress output consists of a JSON block with the following properties:
+  * __progress__ - percent (%) of total blocks processed and synced by the server
+  * __blocksToGo__ - number of blocks left to process/sync
+  * __bps__: rate of blocks processed/synced per second
+  * __percentageIncrease__ - progress percentage increase since last view
+  * __etaHours__ - estimated time (hours) to complete sync
+
+##### example
+
+```bash
+$ docker exec 0labs/geth:latest geth-helper status sync-progress
+
+  {
+   "progress":66.8226399830796,
+   "blocksToGo":4298054,
+   "bps":5.943412173361741,
+   "percentageIncrease":0.0018371597201962686,
+   "etaHours":200.87852803477827
+  }
+```
+
+#### Backup and encrypt keystore
+
+Encrypt and backup client keystore to designated container/host location.
+
+```
+$ geth-helper account backup-keystore --help
+Usage: geth-helper account backup-keystore [OPTIONS] PASSWORD
+
+  Encrypt and backup wallet keystores.
+
+  PASSWORD password used to encrypt and secure keystore backups
+
+Options:
+  --keystore-dir TEXT  path to import a backed-up geth wallet key store
+                       [default: (/root/.ethereum/keystore)]
+  --backup-path TEXT   path containing backup of a geth wallet key store
+                       [default: (/tmp/backups)]
+  --help               Show this message and exit.
+```
+
+`$password=<string>` (**required**)
+- password used to encrypt and secure keystore backups. Keystore backup is encrypted using the `zip` utility's password protection feature.
+
+`$KEYSTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
+- container location to retrieve keys from
+
+`$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
+- container location to store encrypted keystore backups. **Note:** Using container `volume/mounts`, keystores can be backed-up to all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
+
+`$AUTO_BACKUP_KEYSTORE=<boolean>` (**default**: `false`)
+- automatically backup keystore to $BACKUP_PATH location every $BACKUP_INTERVAL seconds
+
+`$BACKUP_INTERVAL=<cron-schedule>` (**default**: `* * * * * (hourly)`)
+- keystore backup frequency based on cron schedules
+
+`$BACKUP_PASSWORD=<string>` (**required**)
+- encryption password for automatic backup operations - see *$password*
+
+#### Import backup
+
+Decrypt and import backed-up keystore to designated container/host keystore location.
+
+```
+$ geth-helper account import-backup --help
+Usage: geth-helper account import-backup [OPTIONS] PASSWORD
+
+  Decrypt and import wallet keystores backups.
+
+  PASSWORD password used to decrypt and import keystore backups
+
+Options:
+  --keystore-dir TEXT  directory to import a backed-up geth wallet key store
+                       [default: (/root/.ethereum/keystore)]
+  --backup-path TEXT   path containing backup of a geth wallet key store
+                       [default: (/tmp/backups/wallet-backup.zip)]
+  --help               Show this message and exit.
+```
+
+`$password=<string>` (**required**)
+- password used to decrypt keystore backups. Keystore backup is decrypted using the `zip/unzip` utility's password protection feature.
+
+`$KEYSTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
+- container location to import keys
+
+`$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
+- container location to retrieve keystore backup. **Note:** Using container `volume/mounts`, keystores can be imported from all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
 
 Example Run
 ----------------
-Basic setup with defaults:
+
+* Create account and bind data/keystore directory to host path:
 ```
-podman run 0labs/0x01.geth:centos-7
+docker run -it -v /mnt/geth/data:/root/.ethereum/ 0labs/geth:latest account new --password <secret>
 ```
 
-Launch an Ethereum light client and connect it to the Rinkeby PoA (Proof of Authority) test network:
+* Launch an Ethereum light client and connect it to the Ropsten, best current like-for-like representation of Ethereum, PoW (Proof of Work) test network:
 ```
-podman run --env CONFIG_Eth_SyncMode='"light"' --env EXTRA_ARGS=--rinkeby 0labs/0x01.geth:centos-7
+docker run --env CONFIG_Eth_SyncMode=light 0labs/geth:latest --ropsten
 ```
 
-Run a full Ethereum node using "fast" sync-mode (only process most recent transactions), enabling both the RPC server interface and overriding the (block) data directory:
+* View sync progress of active local full-node:
 ```
-podman run --env CONFIG_Eth_SyncMode='"fast"' \
-           --env CONFIG_Node_DataDir='"/mnt/geth/data"' \
-           --env EXTRA_ARGS="--rpc" \
-           --volume geth_data:/mnt/geth/data
-           0labs/0x01.geth:centos-7
+id=$(docker run --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest --mainnet)
+
+docker exec $id geth-helper status sync-progress
+```
+
+* Run *fast* sync node with automatic daily backups of custom keystore directory:
+```
+docker run --env CONFIG_Eth_SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
+           --env AUTO_BACKUP_KEYSTORE=true --env BACKUP_INTERVAL="0 * * * *" \
+           --env BACKUP_PASSWORD=<secret> \
+  --volume ~/.ethereum/keystore:/tmp/keystore 0labs/geth:latest
+```
+
+* Import account from keystore backup stored on an attached USB drive:
+```
+id=$(docker run --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest --mainnet)
+
+docker exec --volume /path/to/usb/mount/keys:/tmp/keys \
+            --volume ~/.ethereum:/root/.ethereum \
+            --env BACKUP_PASSWORD=<secret>
+            --env BACKUP_PATH=/tmp/keys/my-wallets.zip
+            $id geth-helper account import-backup
+
+docker exec --volume ~/.ethereum:/root/.ethereum $id account import /root/.ethereum/keystore/a-wallet
 ```
 
 License
@@ -147,4 +315,8 @@ MIT
 Author Information
 ------------------
 
-This Container file was created in 2020 by O1.IO.
+This Containerfile was created in 2021 by O1.IO.
+
+🏆 **always happy to help & donations are always welcome** 💸
+
+**Eth:** 0x652eD9d222eeA1Ad843efec01E60C29bF2CF6E4c

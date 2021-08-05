@@ -3,22 +3,6 @@ dist: focal
 language: minimal
 services:
   - docker
-env:
-  - OS_VERSION=centos-7
-  - OS_VERSION=centos-8
-  - OS_VERSION=fedora-31
-  - OS_VERSION=fedora-32
-  - OS_VERSION=fedora-33
-  - OS_VERSION=ubuntu-18.04
-  - OS_VERSION=ubuntu-20.04
-  - OS_VERSION=debian-8
-  - OS_VERSION=debian-9
-
-before_script:
-  - sudo curl -fsSL https://goss.rocks/install | sudo sh
-  - sudo pip install ansible
-  - ansible-playbook builds/build-playbook.yml -vv
 
 script:
-    - docker build --file builds/artifacts/${OS_VERSION}/Containerfile --tag testing-geth:${OS_VERSION} .
-    - GOSS_FILES_PATH=test dgoss run --env-file test/config-test.env testing-geth:${OS_VERSION}
+    - make test
