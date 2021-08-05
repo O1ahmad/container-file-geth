@@ -32,7 +32,7 @@ COPY entrypoints /docker-entrypoint.d
 COPY scripts/entrypoint.sh /usr/local/bin/geth-entrypoint
 
 COPY scripts/geth-helper.py /usr/local/bin/geth-helper
-RUN chmod +x /usr/local/bin/geth-helper
+RUN chmod ug+x /usr/local/bin/geth-helper
 
 RUN pip install click requests toml
 
@@ -69,9 +69,15 @@ FROM builder as build-tools
 
 RUN cd /tmp/go-ethereum && make all
 
+# ------- #
+
 FROM base as tools
 
 COPY --from=build-tools /tmp/go-ethereum/build/bin/* /usr/local/bin/
+
+WORKDIR /root/.ethereum
+
+CMD ["/bin/bash"]
 
 # ******* Set resultant image state based on launch mode ******* #
 
