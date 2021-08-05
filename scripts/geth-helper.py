@@ -35,7 +35,10 @@ DEFAULT_GETH_CONFIG_PATH = "/root/.ethereum/geth/config.toml"
 DEFAULT_GETH_DATADIR = "/root/.ethereum"
 DEFAULT_GETH_KEYSTORE_DIR = "/root/.ethereum/keystore"
 DEFAULT_GETH_BACKUP_PATH = "/tmp/backups/wallet-backup.zip"
+
 DEFAULT_RPC_ADDRESS = "http://localhost:8545"
+DEFAULT_RPC_METHOD = "eth_syncing"
+DEFAULT_RPC_PARAMS = ""
 
 def execute_command(command):
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
@@ -236,6 +239,31 @@ def sync_progress(rpc_addr):
             json.dump(last_sync_data, sync_file)
     else:
         print(json.dumps({ "progress": "synced" }))
+
+@status.command()
+@click.option('--rpc-addr',
+              default=lambda: os.environ.get("RPC_ADDRESS", DEFAULT_RPC_ADDRESS),
+              show_default=DEFAULT_RPC_ADDRESS,
+              help='server address to query for RPC calls')
+@click.option('--method',
+              default=lambda: os.environ.get("RPC_METHOD", DEFAULT_RPC_METHOD),
+              show_default=DEFAULT_RPC_METHOD,
+              help='RPC method to execute a part of query')
+@click.option('--params',
+              default=lambda: os.environ.get("RPC_PARAMS", DEFAULT_RPC_PARAMS),
+              show_default=DEFAULT_RPC_PARAMS,
+              help='comma separated list of RPC query parameters')
+def query_rpc(rpc_addr, method, params):
+    """Execute RPC query
+    """
+
+    result = execute_jsonrpc(
+        rpc_addr,
+        method,
+        params=[] if len(params) == 0 else params.split(',')
+    ).json()['result']
+
+    print(json.dumps(result))
 
 if __name__ == "__main__":
     cli()

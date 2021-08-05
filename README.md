@@ -19,6 +19,7 @@ Container file that configures and runs [Geth](https://geth.ethereum.org): a com
         - [view client sync progress](#view-client-sync-progress)
         - [backup and encrypt keystore](#backup-and-encrypt-keystore)
         - [import backup](#import-backup)
+        - [query rpc](#query-rpc)
   - [Examples](#examples)
   - [License](#license)
   - [Author Information](#author-information)
@@ -265,6 +266,45 @@ Options:
 
 `$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
 - container location to retrieve keystore backup. **Note:** Using container `volume/mounts`, keystores can be imported from all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
+
+#### Query RPC
+
+Execute query against designated `geth` RPC server.
+
+```
+$ geth-helper status query-rpc --help
+Usage: geth-helper status query-rpc [OPTIONS]
+
+  Execute RPC query
+
+Options:
+  --rpc-addr TEXT  server address to query for RPC calls  [default:
+                   (http://localhost:8545)]
+  --method TEXT    RPC method to execute a part of query  [default:
+                   (eth_syncing)]
+  --params TEXT    comma separated list of RPC query parameters  [default: ()]
+  --help           Show this message and exit.
+```
+
+`$RPC_ADDRESS=<web-address>` (**default**: `localhost:8545`)
+- `geth` RPC server address for querying network state
+
+`$RPC_METHOD=<geth-rpc-method>` (**default**: `eth_syncing`)
+- `geth` RPC method to execute
+
+`$RPC_PARAMS=<rpc-method-params>` (**default**: `''`)
+- `geth` RPC method parameters to include within call
+
+The output consists of a JSON blob corresponding to the expected return object for a given RPC method. Reference [Ethereum's RPC API wiki](https://eth.wiki/json-rpc/API) for more details.
+
+##### example
+
+```bash
+docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net --env RPC_METHOD=eth_gasPrice \
+    0labs/geth:latest geth-helper status query-rpc
+
+"0xe0d7b70f7" # 60,355,735,799 wei
+```
 
 Examples
 ----------------
