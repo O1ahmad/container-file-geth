@@ -1,6 +1,5 @@
 ARG launch_mode=release
 ARG build_version="golang:1.16-stretch"
-ARG version=0.1.1
 
 # ******* Stage: builder ******* #
 FROM ${build_version} as builder
@@ -32,7 +31,7 @@ COPY entrypoints /docker-entrypoint.d
 COPY scripts/entrypoint.sh /usr/local/bin/geth-entrypoint
 
 COPY scripts/geth-helper.py /usr/local/bin/geth-helper
-RUN chmod ug+x /usr/local/bin/geth-helper
+RUN chmod 775 /usr/local/bin/geth-helper
 
 RUN pip install click requests toml
 
@@ -55,7 +54,15 @@ CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 # ******* Stage: release ******* #
 FROM base as release
 
-LABEL version="${version}"
+ARG version=0.2.0
+
+LABEL 01labs.image.authors="zer0ne.io.x@gmail.com" \
+	01labs.image.vendor="O1 Labs" \
+	01labs.image.title="0labs/geth" \
+	01labs.image.description="Official Golang implementation of the Ethereum protocol." \
+	01labs.image.source="https://github.com/0x0I/container-file-geth/blob/${version}/Dockerfile" \
+	01labs.image.documentation="https://github.com/0x0I/container-file-geth/blob/${version}/README.md" \
+	01labs.image.version="${version}"
 
 COPY --from=builder /tmp/go-ethereum/build/bin/geth /usr/local/bin/
 
