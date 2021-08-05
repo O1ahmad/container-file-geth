@@ -266,7 +266,7 @@ Options:
 `$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
 - container location to retrieve keystore backup. **Note:** Using container `volume/mounts`, keystores can be imported from all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
 
-Example Run
+Examples
 ----------------
 
 * Create account and bind data/keystore directory to host path:
