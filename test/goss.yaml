@@ -6,6 +6,12 @@ file:
     owner: root
     group: root
     filetype: file
+  /usr/local/bin/geth-helper:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: file
   /root/.ethereum/geth/config.toml:
     exists: true
     mode: "0644"
@@ -20,12 +26,20 @@ file:
       - "DataDir ="
       - "[Node.P2P]"
       - "MaxPeers ="
+  /tmp/backups:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: directory
 package:
+  curl:
+    installed: true
   cron:
     installed: true
-  zip:
-    installed: true
   unzip:
+    installed: true
+  zip:
     installed: true
 service:
   cron:
