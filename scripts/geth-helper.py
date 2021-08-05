@@ -195,44 +195,47 @@ def sync_progress(rpc_addr):
         "eth_syncing",
         params=[]).json()['result']
 
-    lastPercentage = 0; lastBlocksToGo = 0; timeInterval = 0
-    date_format_str = '%d/%m/%Y %H:%M:%S.%f'
-    syncPath = '/tmp/geth-sync-progress.json'
-    if os.path.isfile(syncPath):
-        with open(syncPath, 'r') as sync_file:
-            data = json.load(sync_file)
-            lastPercentage = data['lastPercentage']
-            lastBlocksToGo = data['lastBlocksToGo']
+    if status != False:
+        lastPercentage = 0; lastBlocksToGo = 0; timeInterval = 0
+        date_format_str = '%d/%m/%Y %H:%M:%S.%f'
+        syncPath = '/tmp/geth-sync-progress.json'
+        if os.path.isfile(syncPath):
+            with open(syncPath, 'r') as sync_file:
+                data = json.load(sync_file)
+                lastPercentage = data['lastPercentage']
+                lastBlocksToGo = data['lastBlocksToGo']
 
-            lastSyncTime = datetime.strptime(data['time'], date_format_str)
-            timeInterval = (datetime.now() - lastSyncTime).total_seconds()
+                lastSyncTime = datetime.strptime(data['time'], date_format_str)
+                timeInterval = (datetime.now() - lastSyncTime).total_seconds()
 
-    percentage = (int(status['currentBlock'], 16) / int(status['highestBlock'], 16)) * 100
-    percentagePerTime = percentage - lastPercentage
-    blocksToGo = int(status['highestBlock'], 16) - int(status['currentBlock'], 16)
-    bps = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else ((lastBlocksToGo - blocksToGo) / timeInterval)
-    etas = 0 if bps == 0 else (blocksToGo / bps)
-    etaHours = etas / 3600
-    stateProgress = 0 if int(status['knownStates'], 16) == 0 else (int(status['pulledStates'], 16) / int(status['knownStates'], 16)) * 100
+        percentage = (int(status['currentBlock'], 16) / int(status['highestBlock'], 16)) * 100
+        percentagePerTime = percentage - lastPercentage
+        blocksToGo = int(status['highestBlock'], 16) - int(status['currentBlock'], 16)
+        bps = 0 if (timeInterval == 0 or lastBlocksToGo == 0) else ((lastBlocksToGo - blocksToGo) / timeInterval)
+        etas = 0 if bps == 0 else (blocksToGo / bps)
+        etaHours = etas / 3600
+        stateProgress = 0 if int(status['knownStates'], 16) == 0 else (int(status['pulledStates'], 16) / int(status['knownStates'], 16)) * 100
 
-    result = {
-        "progress": percentage,
-        "blocksToGo": blocksToGo,
-        "bps": bps,
-        "percentageIncrease": percentagePerTime,
-        "stateProgress": stateProgress,
-        "etaHours": etaHours
-    }
-    print(json.dumps(result))
+        result = {
+            "progress": percentage,
+            "blocksToGo": blocksToGo,
+            "bps": bps,
+            "percentageIncrease": percentagePerTime,
+            "stateProgress": stateProgress,
+            "etaHours": etaHours
+        }
+        print(json.dumps(result))
 
-    # write out historical data for reference on next invokation
-    last_sync_data = {
-        "lastPercentage": percentage,
-        "lastBlocksToGo": blocksToGo,
-        "time": datetime.now().strftime(date_format_str)
-    }
-    with open(syncPath, 'w') as sync_file:
-        json.dump(last_sync_data, sync_file)
+        # write out historical data for reference on next invokation
+        last_sync_data = {
+            "lastPercentage": percentage,
+            "lastBlocksToGo": blocksToGo,
+            "time": datetime.now().strftime(date_format_str)
+        }
+        with open(syncPath, 'w') as sync_file:
+            json.dump(last_sync_data, sync_file)
+    else:
+        print(json.dumps({ "progress": "synced" }))
 
 if __name__ == "__main__":
     cli()
