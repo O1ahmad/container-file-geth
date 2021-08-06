@@ -8,7 +8,7 @@ jobs:
               name: docker build complete image
               command: make build
          - run:
-              name: docker build and --target test
+              name: docker build and test image base
               command: make test
 
          - run:
@@ -18,3 +18,7 @@ jobs:
          - run:
               name: push image version to Dockerhub
               command: make release
+
+         - run:
+              name: build and push tools image version to Dockerhub
+              command: make tools
