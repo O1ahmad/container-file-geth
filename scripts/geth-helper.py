@@ -261,9 +261,11 @@ def query_rpc(rpc_addr, method, params):
         rpc_addr,
         method,
         params=[] if len(params) == 0 else params.split(',')
-    ).json()['result']
-
-    print(json.dumps(result))
+    ).json()
+    if 'error' in result:
+        print(json.dumps(result['error']))
+    else:
+        print(json.dumps(result['result']))
 
 if __name__ == "__main__":
     cli()
