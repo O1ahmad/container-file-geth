@@ -76,6 +76,10 @@ def customize(config_path):
     if os.path.isfile(config_path):
         config_dict = toml.load(config_path)
 
+    # check for keystore dir envvar to ensure proper config setting
+    if "KEYSTORE_DIR" in os.environ.keys():
+        os.environ['CONFIG_Node_KeyStoreDir'] = os.environ['KEYSTORE_DIR']
+
     for var in os.environ.keys():
         var_split = var.split('_')
         if len(var_split) == 3 and var_split[0].lower() == "config":
