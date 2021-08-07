@@ -24,7 +24,11 @@ RUN apt update && apt install --yes --no-install-recommends \
     pip \
     tini \
     zip unzip \
-    && rm -rf /var/lib/apt/lists/*
+    # apt cleanup
+	&& apt-get autoremove -y; \
+	apt-get clean; \
+	update-ca-certificates; \
+	rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
 WORKDIR /docker-entrypoint.d
 COPY entrypoints /docker-entrypoint.d
