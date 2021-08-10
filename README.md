@@ -10,35 +10,42 @@ Container File :computer: :link: Geth
 
 Container file that configures and runs [Geth](https://geth.ethereum.org): a command-line interface and API server for operating an Ethereum node.
 
+
+
 **Overview**
-  - [Requirements](#requirements)
-  - [Environment Variables](#environment-variables)
-      - [Config](#config)
-      - [Operations](#operations)
-        - [check account balances](#check-account-balances)
-        - [view client sync progress](#view-client-sync-progress)
-        - [backup and encrypt keystore](#backup-and-encrypt-keystore)
-        - [import backup](#import-backup)
-        - [query rpc](#query-rpc)
+  - [Setup](#setup)
+    - [Build](#build)
+    - [Config](#config)
+  - [Operations](#operations)
   - [Examples](#examples)
   - [License](#license)
   - [Author Information](#author-information)
 
-Requirements
-------------
-
-None
-
-Environment Variables
+### Setup
 --------------
-
-Variables are available and organized according to the following software & machine provisioning stages:
+Guidelines on running service containers are available and organized according to the following software & machine provisioning stages:
+* _build_
 * _config_
 * _operations_
 
-### :page_with_curl: Config
+#### Build
 
-Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup format, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
+##### targets
+
+| Name  | description |
+| ------------- | ------------- |
+| `builder` | image state following build of geth binary/artifacts |
+| `test` | image containing test tools, functional test cases for validation and `release` target contents |
+| `release` | minimal resultant image containing service binaries, entrypoints and helper scripts |
+| `tool` | setup consisting of all geth utilities, helper tooling and `release` target contents |
+
+```bash
+docker build --target <target> -t <tag> .
+```
+
+#### Config
+
+:page_with_curl: Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup format, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
 
 _The following variables can be customized to manage the location and content of this TOML configuration:_
 
@@ -116,11 +123,20 @@ _Moreover, see [here](https://geth.ethereum.org/docs/interface/command-line-opti
 docker run 0labs/geth:latest --mainnet --http
 ```
 
-### :flashlight: Operations
+###### port mappings
 
-To assist with managing a `geth` client and interfacing with the *Ethereum* network, the following utility functions have been included within the image.
+| Port  | mapping description | type | config setting | command-line flag |
+| ------------- | ------------- | ------------- | :-------------: | :-------------: |
+| `3085`    | RPC server | *TCP*  | `Node : HTTPPort` | `--http.port` |
+| `3086`    | Websocket RPC server | *TCP*  | `Node : WSPort` | `--ws.port` |
+| `30303`    | protocol peer gossip | *TCP*  | `Node.P2P : ListenAddr` | `--port` |
+| `30304`    | protocol peer discovery | *UDP*  | `-` | `-` |
 
-#### Check account balances
+#### Operations
+
+:flashlight: To assist with managing a `geth` client and interfacing with the *Ethereum* network, the following utility functions have been included within the image.
+
+##### Check account balances
 
 Display account balances of all accounts currently managed by a designated `geth` RPC server.
 
@@ -143,7 +159,7 @@ The balances output consists of a JSON list of entries with the following proper
   * __account__ - account owner's address
   * __balance__ - total balance of account in decimal
 
-##### example
+###### example
 
 ```bash
 docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-helper status check-balances
@@ -160,7 +176,7 @@ docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net 0labs/geth:latest geth-he
 ]
 ```
 
-#### View client sync progress
+##### View client sync progress
 
 View current progress of an RPC server's sync with the network if not already caughtup.
 
@@ -186,7 +202,7 @@ The progress output consists of a JSON block with the following properties:
   * __percentageIncrease__ - progress percentage increase since last view
   * __etaHours__ - estimated time (hours) to complete sync
 
-##### example
+###### example
 
 ```bash
 $ docker exec 0labs/geth:latest geth-helper status sync-progress
@@ -200,7 +216,7 @@ $ docker exec 0labs/geth:latest geth-helper status sync-progress
   }
 ```
 
-#### Backup and encrypt keystore
+##### Backup and encrypt keystore
 
 Encrypt and backup client keystore to designated container/host location.
 
@@ -238,7 +254,7 @@ Options:
 `$BACKUP_PASSWORD=<string>` (**required**)
 - encryption password for automatic backup operations - see *$password*
 
-#### Import backup
+##### Import backup
 
 Decrypt and import backed-up keystore to designated container/host keystore location.
 
@@ -267,7 +283,7 @@ Options:
 `$BACKUP_PATH=<string>` (**default**: `/tmp/backups`)
 - container location to retrieve keystore backup. **Note:** Using container `volume/mounts`, keystores can be imported from all kinds of storage solutions (e.g. USB drives or auto-synced Google Drive folders)
 
-#### Query RPC
+##### Query RPC
 
 Execute query against designated `geth` RPC server.
 
@@ -297,7 +313,7 @@ Options:
 
 The output consists of a JSON blob corresponding to the expected return object for a given RPC method. Reference [Ethereum's RPC API wiki](https://eth.wiki/json-rpc/API) for more details.
 
-##### example
+###### example
 
 ```bash
 docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net --env RPC_METHOD=eth_gasPrice \
