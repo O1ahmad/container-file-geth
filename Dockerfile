@@ -70,6 +70,8 @@ LABEL 01labs.image.authors="zer0ne.io.x@gmail.com" \
 
 COPY --from=builder /tmp/go-ethereum/build/bin/geth /usr/local/bin/
 
+#      rpc   ws   p2p   discovery
+#       ↓    ↓     ↓        ↓
 EXPOSE 8545 8546 30303 30303/udp
 
 CMD ["geth"]
