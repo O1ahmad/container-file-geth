@@ -1,4 +1,3 @@
-ARG launch_mode=release
 ARG build_version="golang:1.16-stretch"
 
 # ******* Stage: builder ******* #
@@ -91,9 +90,3 @@ COPY --from=build-tools /tmp/go-ethereum/build/bin/* /usr/local/bin/
 WORKDIR /root/.ethereum
 
 CMD ["/bin/bash"]
-
-# ******* Set resultant image state based on launch mode ******* #
-
-FROM ${launch_mode} AS after-condition
-
-FROM after-condition
