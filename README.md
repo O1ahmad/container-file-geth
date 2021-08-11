@@ -8,8 +8,7 @@ Container File :computer: :link: Geth
 [![Docker Pulls](https://img.shields.io/docker/pulls/0labs/geth?style=flat)](https://hub.docker.com/repository/docker/0labs/geth)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blueviolet.svg)](https://opensource.org/licenses/MIT)
 
-Container file that configures and runs [Geth](https://geth.ethereum.org): a command-line interface and API server for operating an Ethereum node.
-
+Configure and operate Geth (Go-Ethereum): an Ethereum blockchain client written in Go.
 
 
 **Overview**
