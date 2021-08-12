@@ -326,19 +326,19 @@ Examples
 
 * Create account and bind data/keystore directory to host path:
 ```
-docker run -it -v /mnt/geth/data:/root/.ethereum/ 0labs/geth:latest account new --password <secret>
+docker run -it -v /mnt/geth/data:/root/.ethereum/ 0labs/geth:latest geth account new --password <secret>
 ```
 
 * Launch an Ethereum light client and connect it to the Ropsten, best current like-for-like representation of Ethereum, PoW (Proof of Work) test network:
 ```
-docker run --env CONFIG_Eth_SyncMode=light 0labs/geth:latest --ropsten
+docker run --env CONFIG_Eth_SyncMode=light 0labs/geth:latest geth --ropsten
 ```
 
 * View sync progress of active local full-node:
 ```
-id=$(docker run --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest --mainnet)
+docker run --name 01-geth --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest geth --mainnet
 
-docker exec $id geth-helper status sync-progress
+docker exec 01-geth geth-helper status sync-progress
 ```
 
 * Run *fast* sync node with automatic daily backups of custom keystore directory:
@@ -351,15 +351,15 @@ docker run --env CONFIG_Eth_SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
 
 * Import account from keystore backup stored on an attached USB drive:
 ```
-id=$(docker run --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest --mainnet)
+docker run --name 01-geth --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest geth --mainnet
 
 docker exec --volume /path/to/usb/mount/keys:/tmp/keys \
             --volume ~/.ethereum:/root/.ethereum \
             --env BACKUP_PASSWORD=<secret>
             --env BACKUP_PATH=/tmp/keys/my-wallets.zip
-            $id geth-helper account import-backup
+            01-geth geth-helper account import-backup
 
-docker exec --volume ~/.ethereum:/root/.ethereum $id account import /root/.ethereum/keystore/a-wallet
+docker exec --volume ~/.ethereum:/root/.ethereum 01-geth account import /root/.ethereum/keystore/a-wallet
 ```
 
 License
