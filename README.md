@@ -55,14 +55,14 @@ _The following variables can be customized to manage the location and content of
   GETH_CONFIG_DIR=/mnt/etc/geth
   ```
 
-`$CONFIG_<section-keyword>_<section-property> = <property-value (string)>` **default**: *None*
+`$CONFIG-<section-keyword>-<section-property> = <property-value (string)>` **default**: *None*
 
 - Any configuration setting/value key-pair supported by `geth` should be expressible and properly rendered within the associated TOML config.
 
     `<section-keyword>` -- represents TOML config sections:
     ```bash
     # [TOML Section 'Shh']
-    CONFIG_Shh_<section-property>=<property-value>
+    CONFIG-Shh-<section-property>=<property-value>
     ```
 
     `<section-property>` -- represents a specific TOML config section property to configure:
@@ -70,7 +70,7 @@ _The following variables can be customized to manage the location and content of
     ```bash
     # [TOML Section 'Shh']
     # Property: MaxMessageSize
-    CONFIG_Shh_MaxMessageSize=<property-value>
+    CONFIG-Shh-MaxMessageSize=<property-value>
     ```
 
     `<property-value>` -- represents property value to configure:
@@ -78,7 +78,7 @@ _The following variables can be customized to manage the location and content of
     # [TOML Section 'Shh']
     # Property: MaxMessageSize
     # Value: 2097152
-    CONFIG_Shh_MaxMessageSize=2097152
+    CONFIG-Shh-MaxMessageSize=2097152
     ```
 
     A list of configurable settings can be found [here](https://gist.github.com/0x0I/5887dae3cdf4620ca670e3b194d82cba).
@@ -110,7 +110,7 @@ SyncMode = "fast"
 DataDir = "/mnt/data/geth"
 
 # mount custom config into container
-$ docker run -it --env GETH_CONFIG_DIR=/tmp/geth --env CONFIG_Eth_SyncMode=full \
+$ docker run -it --env GETH_CONFIG_DIR=/tmp/geth --env CONFIG-Eth-SyncMode=full \
   --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/geth/config.toml \
   0labs/geth:latest --config /tmp/geth/config.toml
 ```
@@ -128,8 +128,7 @@ docker run 0labs/geth:latest --mainnet --http
 | ------------- | ------------- | ------------- | :-------------: | :-------------: |
 | `3085`    | RPC server | *TCP*  | `Node : HTTPPort` | `--http.port` |
 | `3086`    | Websocket RPC server | *TCP*  | `Node : WSPort` | `--ws.port` |
-| `30303`    | protocol peer gossip | *TCP*  | `Node.P2P : ListenAddr` | `--port` |
-| `30304`    | protocol peer discovery | *UDP*  | `-` | `-` |
+| `30303`    | protocol peer gossip and discovery | *TCP/UDP*  | `Node.P2P : ListenAddr` | `--port` |
 
 #### Operations
 
@@ -331,19 +330,19 @@ docker run -it -v /mnt/geth/data:/root/.ethereum/ 0labs/geth:latest geth account
 
 * Launch an Ethereum light client and connect it to the Ropsten, best current like-for-like representation of Ethereum, PoW (Proof of Work) test network:
 ```
-docker run --env CONFIG_Eth_SyncMode=light 0labs/geth:latest geth --ropsten
+docker run --env CONFIG-Eth-SyncMode=light 0labs/geth:latest geth --ropsten
 ```
 
 * View sync progress of active local full-node:
 ```
-docker run --name 01-geth --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest geth --mainnet
+docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full 0labs/geth:latest geth --mainnet
 
 docker exec 01-geth geth-helper status sync-progress
 ```
 
 * Run *fast* sync node with automatic daily backups of custom keystore directory:
 ```
-docker run --env CONFIG_Eth_SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
+docker run --env CONFIG-Eth-SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
            --env AUTO_BACKUP_KEYSTORE=true --env BACKUP_INTERVAL="0 * * * *" \
            --env BACKUP_PASSWORD=<secret> \
   --volume ~/.ethereum/keystore:/tmp/keystore 0labs/geth:latest
@@ -351,7 +350,7 @@ docker run --env CONFIG_Eth_SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
 
 * Import account from keystore backup stored on an attached USB drive:
 ```
-docker run --name 01-geth --detach --env CONFIG_Eth_SyncMode=full 0labs/geth:latest geth --mainnet
+docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full 0labs/geth:latest geth --mainnet
 
 docker exec --volume /path/to/usb/mount/keys:/tmp/keys \
             --volume ~/.ethereum:/root/.ethereum \
