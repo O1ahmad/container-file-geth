@@ -78,12 +78,12 @@ def customize(config_path):
 
     # check for keystore dir envvar to ensure proper config setting
     if "KEYSTORE_DIR" in os.environ.keys():
-        os.environ['CONFIG_Node_KeyStoreDir'] = os.environ['KEYSTORE_DIR']
+        os.environ['CONFIG-Node-KeyStoreDir'] = os.environ['KEYSTORE_DIR']
 
     for var in os.environ.keys():
-        var_split = var.split('_')
+        var_split = var.split('-')
         if len(var_split) == 3 and var_split[0].lower() == "config":
-	    # support encoding of '.' or dot char within config settings
+	        # support encoding of '.' or dot char within config settings
             # with 'dot' (e.g. "CONFIG_Node.P2P_MaxPeers" should be represented
             # as "CONFIG_NodedotP2P_MaxPeers"
             config_section = var_split[1].replace("dot", ".")
