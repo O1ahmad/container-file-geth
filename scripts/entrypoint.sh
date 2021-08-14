@@ -1,10 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+# Print all commands executed if DEBUG mode enabled
+[ -n "${DEBUG:-""}" ] && set -x
+
 DIR=/docker-entrypoint.d
 
 if [[ -d "$DIR" ]] ; then
-  echo "Executing entrypoint scripts in $DIR"
   /bin/run-parts --exit-on-error "$DIR"
 fi
 
