@@ -22,7 +22,7 @@ Configure and operate Geth (Go-Ethereum): an Ethereum blockchain client written 
 
 ### Setup
 --------------
-Guidelines on running service containers are available and organized according to the following software & machine provisioning stages:
+Guidelines on running `0labs/geth` containers are available and organized according to the following software & machine provisioning stages:
 * _build_
 * _config_
 * _operations_
