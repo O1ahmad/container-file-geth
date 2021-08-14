@@ -57,13 +57,19 @@ def execute_command(command):
     return output.decode('utf-8')
 
 def execute_jsonrpc(rpc_address, method, params):
+    # prepare inputs for wire transfer
+    for idx, item in enumerate(params):
+        if item == "False" or item == "false":
+            params[idx] = False
+        elif item == "True" or item == "true":
+            params[idx] == True
+
     req = {
         "jsonrpc": "2.0",
         "method": method,
         "params": params,
         "id": 1
     }
-
     try:
         result = requests.post(rpc_address, json=req, headers={'Content-Type': 'application/json'})
     except requests.exceptions.ConnectionError as err:
