@@ -10,7 +10,7 @@ test:
 	docker build --target test --build-arg geth_version=$(version) -t geth:test . && docker run --env-file test/test.env geth:test
 
 release:
-	docker build  --network host --target release --no-cache -t $(image_repo):$(version) --build-arg geth_version=$(version) .
+	docker build --target release --no-cache -t $(image_repo):$(version) --build-arg geth_version=$(version) .
 	docker push $(image_repo):$(version)
 
 latest:
