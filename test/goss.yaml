@@ -27,6 +27,8 @@ file:
       - "KeyStoreDir ="
       - "[Node.P2P]"
       - "MaxPeers ="
+      - "[Metrics]"
+      - "Enabled = true"
   /tmp/backups:
     exists: true
     mode: "0755"

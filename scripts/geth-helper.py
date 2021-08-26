@@ -111,8 +111,13 @@ def customize(config_path):
                 config_dict[config_section] = {}
 
             value = os.environ[var]
+            # ensure values are cast appropriately
             if value.isdigit():
                 value = int(value)
+            elif value.lower() == "true":
+                value = True
+            elif value.lower() == "false":
+                value = False
             config_dict[config_section][section_setting] = value
 
     with open(config_path, 'w+') as f:
