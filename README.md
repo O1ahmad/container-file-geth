@@ -122,6 +122,8 @@ _Moreover, see [here](https://geth.ethereum.org/docs/interface/command-line-opti
 docker run 0labs/geth:latest --mainnet --http
 ```
 
+_...and reference below for network/chain identification and communication configs:_ 
+
 ###### port mappings
 
 | Port  | mapping description | type | config setting | command-line flag |
@@ -129,6 +131,18 @@ docker run 0labs/geth:latest --mainnet --http
 | `3085`    | RPC server | *TCP*  | `Node : HTTPPort` | `--http.port` |
 | `3086`    | Websocket RPC server | *TCP*  | `Node : WSPort` | `--ws.port` |
 | `30303`    | protocol peer gossip and discovery | *TCP/UDP*  | `Node.P2P : ListenAddr` | `--port` |
+
+###### chain id mappings
+
+| name | config setting (Eth : NetworkId) | command-line flag |
+| :---: | :---: | :---: |
+| Mainnet | 1 | `--mainnet` |
+| Goerli | 5 | `--goerli` |
+| Kovan | 42 | `n/a` |
+| Rinkeby | 4 | `--rinkeby` |
+| Ropsten | 3 | `--ropsten` |
+
+see [chainlist.org](https://chainlist.org/) for a complete list
 
 #### Operations
 
