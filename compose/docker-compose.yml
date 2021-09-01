@@ -1,0 +1,43 @@
+version: "3"
+
+networks:
+  ethereum:
+  monitoring:
+
+services:
+  geth:
+    image: ${geth_image:-0labs/geth:latest}
+    container_name: geth
+    command:
+      - "geth"
+      - "--${geth_net:-rinkeby}"
+      - "--log.debug"
+      - "--config=${GETH_CONFIG_DIR}/config.toml"
+      - "--http"
+      - "--metrics"
+      - "--metrics.addr=0.0.0.0"
+    env_file:
+      - .env
+    ports:
+      - ${geth_p2p_port:-30303}:30303/tcp
+      - ${geth_rpc_port:-8545}:8545
+      - ${geth_metrics_port:-6060}:6060
+    volumes:
+      - "${host_data_dir}:${geth_data_dir}"
+      - "${host_config:-./config.toml}:${geth_config_dir}/config.toml"
+    networks:
+      - ethereum
+      - monitoring
+    restart: ${restart_policy:-always}
+
+  geth-exporter:
+    image: ${exporter_image:-hunterlong/gethexporter:latest}
+    container_name: geth-exporter
+    environment:
+      GETH: "${exporter_rpc_addr:-http://geth:8545}"
+    ports:
+      - ${exporter_port:-10090}:9090
+    networks:
+      - ethereum
+      - monitoring
+    restart: ${restart_policy:-always}
