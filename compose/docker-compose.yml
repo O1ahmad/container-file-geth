@@ -15,7 +15,7 @@ services:
       - "--config=${GETH_CONFIG_DIR}/config.toml"
       - "--http"
       - "--metrics"
-      - "--metrics.addr=0.0.0.0"
+      - "--metrics.addr=${geth_metrics_addr:-0.0.0.0}"
     env_file:
       - .env
     ports:
@@ -23,8 +23,7 @@ services:
       - ${geth_rpc_port:-8545}:8545
       - ${geth_metrics_port:-6060}:6060
     volumes:
-      - "${host_data_dir}:${geth_data_dir}"
-      - "${host_config:-./config.toml}:${geth_config_dir}/config.toml"
+      - "${host_data_dir:-/operations/ethereum/geth/data}:${geth_data_dir:-/root/.ethereum}"
     networks:
       - ethereum
       - monitoring
