@@ -16,8 +16,9 @@ services:
       - "--http"
       - "--metrics"
       - "--metrics.addr=${geth_metrics_addr:-0.0.0.0}"
+      - "--nat=extip:${geth_external_addr:-127.0.0.1}"
     env_file:
-      - .env
+      - ${env_vars:-.env}
     ports:
       - ${geth_p2p_port:-30303}:30303/tcp
       - ${geth_rpc_port:-8545}:8545
