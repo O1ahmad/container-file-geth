@@ -9,6 +9,9 @@ build:
 test:
 	docker build --target test --build-arg geth_version=$(version) --tag geth:test . && docker run --env-file test/test.env geth:test
 
+test-compose:
+	cd compose && docker-compose up -d
+
 release:
 	docker build --target release --tag $(image_repo):$(version) --build-arg geth_version=$(version) .
 	docker push $(image_repo):$(version)
