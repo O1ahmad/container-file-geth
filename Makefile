@@ -10,7 +10,9 @@ test:
 	docker build --target test --build-arg geth_version=$(version) --tag geth:test . && docker run --env-file test/test.env geth:test
 
 test-compose:
-	cd compose && docker-compose up -d
+	cd compose && docker-compose config && docker-compose up -d && \
+	sleep 5 && docker-compose logs 2>&1 | grep "Starting Geth on Rinkeby" && \
+	docker-compose down
 
 release:
 	docker build --target release --tag $(image_repo):$(version) --build-arg geth_version=$(version) .

@@ -6,29 +6,31 @@ networks:
 
 services:
   geth:
-    image: ${geth_image:-0labs/geth:latest}
+    image: ${image:-0labs/geth:latest}
     container_name: geth
     command:
       - "geth"
-      - "--${geth_net:-rinkeby}"
+      - "--${chain:-rinkeby}"
       - "--log.debug"
-      - "--config=${GETH_CONFIG_DIR}/config.toml"
+      - "--config=${GETH_CONFIG_DIR:-/etc/geth}/config.toml"
       - "--http"
       - "--metrics"
-      - "--metrics.addr=${geth_metrics_addr:-0.0.0.0}"
-      - "--nat=extip:${geth_external_addr:-127.0.0.1}"
+      - "--metrics.addr=${metrics_addr:-0.0.0.0}"
+      - "--nat=extip:${external_addr:-127.0.0.1}"
+    environment:
+      GETH_CONFIG_DIR: ${GETH_CONFIG_DIR:-/etc/geth}
     env_file:
       - ${env_vars:-.env}
     ports:
-      - ${geth_p2p_port:-30303}:30303/tcp
-      - ${geth_rpc_port:-8545}:8545
-      - ${geth_metrics_port:-6060}:6060
+      - ${p2p_port:-30303}:30303/tcp
+      - ${rpc_port:-8545}:8545
+      - ${metrics_port:-6060}:6060
     volumes:
-      - "${host_data_dir:-/operations/ethereum/geth/data}:${geth_data_dir:-/root/.ethereum}"
+      - "${host_data_dir:-/operations/ethereum/geth/data}:${data_dir:-/root/.ethereum}"
     networks:
       - ethereum
       - monitoring
-    restart: ${restart_policy:-always}
+    restart: ${restart_policy:-unless-stopped}
 
   geth-exporter:
     image: ${exporter_image:-hunterlong/gethexporter:latest}
@@ -40,4 +42,4 @@ services:
     networks:
       - ethereum
       - monitoring
-    restart: ${restart_policy:-always}
+    restart: ${restart_policy:-unless-stopped}
