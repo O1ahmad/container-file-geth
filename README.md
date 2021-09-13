@@ -44,7 +44,7 @@ docker build --target <target> -t <tag> .
 
 #### Config
 
-:page_with_curl: Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup format, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration.
+:page_with_curl: Configuration of the `geth` client can be expressed in a config file written in [TOML](https://github.com/toml-lang/toml), a minimal markup format, used as an alternative to passing command-line flags at runtime. To get an idea how the config should look you can use the `geth dumpconfig` subcommand to export a client's existing configuration. Also, a list of configurable settings can be found [here](https://gist.github.com/0x0I/5887dae3cdf4620ca670e3b194d82cba).
 
 _The following variables can be customized to manage the location and content of this TOML configuration:_
 
@@ -80,11 +80,7 @@ _The following variables can be customized to manage the location and content of
     # Value: 2097152
     CONFIG-Shh-MaxMessageSize=2097152
     ```
-
-    A list of configurable settings can be found [here](https://gist.github.com/0x0I/5887dae3cdf4620ca670e3b194d82cba).
-
-    **Note:** `<section-keyword>` should be written with the word 'dot' replacing '.' characters in config section settings (**e.g.** *Node.P2P* should be written as *NodedotP2P*).
-
+    
 _Additionally, the content of the TOML configuration file can either be pregenerated and mounted into a container instance:_
 
 ```bash
