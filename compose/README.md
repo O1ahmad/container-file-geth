@@ -18,7 +18,7 @@ or included within an environment config file located either at a `.env` file wi
 **Optional**
 
 | var | description | default |
-| :---: | :---: | :---: |
+| --- | :---: | :---: |
 | *image* | Geth service container image to deploy | `0labs/geth:latest` |
 | *chain* | Ethereum network/chain to connect geth instance to | `rinkeby` |
 | *GETH_CONFIG_DIR* | configuration directory path within container | `/etc/geth` |
