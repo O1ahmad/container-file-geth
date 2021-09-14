@@ -123,7 +123,7 @@ _...and reference below for network/chain identification and communication confi
 ###### port mappings
 
 | Port  | mapping description | type | config setting | command-line flag |
-| ------------- | ------------- | ------------- | :-------------: | :-------------: |
+| :-------------: | :-------------: | :-------------: | :-------------: | :-------------: |
 | `3085`    | RPC server | *TCP*  | `Node : HTTPPort` | `--http.port` |
 | `3086`    | Websocket RPC server | *TCP*  | `Node : WSPort` | `--ws.port` |
 | `30303`    | protocol peer gossip and discovery | *TCP/UDP*  | `Node.P2P : ListenAddr` | `--port` |
