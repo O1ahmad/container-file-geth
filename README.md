@@ -360,15 +360,15 @@ docker run --env CONFIG-Eth-SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
 
 * Import account from keystore backup stored on an attached USB drive:
 ```
-docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full 0labs/geth:latest geth --mainnet
+docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full \
+           --volume /path/to/usb/mount/keys:/tmp/keys \
+           --volume ~/.ethereum:/root/.ethereum \0labs/geth:latest geth --mainnet
 
-docker exec --volume /path/to/usb/mount/keys:/tmp/keys \
-            --volume ~/.ethereum:/root/.ethereum \
-            --env BACKUP_PASSWORD=<secret>
+docker exec --env BACKUP_PASSWORD=<secret>
             --env BACKUP_PATH=/tmp/keys/my-wallets.zip
             01-geth geth-helper account import-backup
 
-docker exec --volume ~/.ethereum:/root/.ethereum 01-geth account import /root/.ethereum/keystore/a-wallet
+docker exec 01-geth account import /root/.ethereum/keystore/a-wallet
 ```
 
 License
