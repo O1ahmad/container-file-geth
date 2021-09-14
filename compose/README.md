@@ -1,8 +1,8 @@
 
 
-# :octocat: Geth :cloud: Compose
+# Geth :cloud: Compose
 
-Custom configuration of this deployment composition can be provided by setting environment variables of the operation environment explicitly:
+:octocat: Custom configuration of this deployment composition can be provided by setting environment variables of the operation environment explicitly:
 
 `export chain=mainnet`
 
