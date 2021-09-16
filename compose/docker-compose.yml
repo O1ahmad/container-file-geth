@@ -2,7 +2,6 @@ version: "3"
 
 networks:
   ethereum:
-  monitoring:
 
 services:
   geth:
@@ -24,12 +23,12 @@ services:
     ports:
       - ${p2p_port:-30303}:30303/tcp
       - ${rpc_port:-8545}:8545
+      - ${ws_port:-8546}:8546
       - ${metrics_port:-6060}:6060
     volumes:
       - "${host_data_dir:-/operations/ethereum/geth/data}:${data_dir:-/root/.ethereum}"
     networks:
       - ethereum
-      - monitoring
     restart: ${restart_policy:-unless-stopped}
 
   geth-exporter:
@@ -41,5 +40,4 @@ services:
       - ${exporter_port:-10090}:9090
     networks:
       - ethereum
-      - monitoring
     restart: ${restart_policy:-unless-stopped}
