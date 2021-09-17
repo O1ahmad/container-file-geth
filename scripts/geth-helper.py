@@ -72,18 +72,16 @@ def execute_jsonrpc(rpc_address, method, params=[]):
     }
     try:
         result = requests.post(rpc_address, json=req, headers={'Content-Type': 'application/json'})
-    except requests.exceptions.ConnectionError as err:
-        return {
-            "error": "Failed to establish connection to {rpc_addr} - {error}".format(
-                rpc_addr=rpc_address,
+        result.raise_for_status()
+    except requests.exceptions.RequestException as err:
+        sys.exit(print_json({
+            "error": "RPC request to {host} failed with: {error}".format(
+                host=rpc_address,
                 error=err
             )
-        }
+        }))
 
-    if result.status_code == requests.codes.ok:
-        return result.json()
-    else:
-        raise Exception("Bad Request: {res}".format(res=result))
+    return result.json()
 
 @config.command()
 @click.option('--config-path',
