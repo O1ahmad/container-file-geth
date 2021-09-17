@@ -8,8 +8,8 @@ ARG geth_version=v1.10.6
 RUN apt update && apt install --yes --no-install-recommends gcc git make
 
 WORKDIR /tmp
-RUN git clone https://github.com/ethereum/go-ethereum.git
-RUN cd go-ethereum && git checkout ${geth_version} && make geth
+RUN git clone --depth 1 --branch ${geth_version} https://github.com/ethereum/go-ethereum.git
+RUN cd go-ethereum && make geth
 
 WORKDIR /tmp/go-ethereum
 
