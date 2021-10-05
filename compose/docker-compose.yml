@@ -10,12 +10,11 @@ services:
     command:
       - "geth"
       - "--${chain:-rinkeby}"
-      - "--log.debug"
+      - "--log.${log_opt:-json}"
       - "--config=${GETH_CONFIG_DIR:-/etc/geth}/config.toml"
       - "--http"
       - "--metrics"
-      - "--metrics.addr=${metrics_addr:-0.0.0.0}"
-      - "--nat=extip:${external_addr:-127.0.0.1}"
+      - "--metrics.addr=${metrics_addr}"
     environment:
       GETH_CONFIG_DIR: ${GETH_CONFIG_DIR:-/etc/geth}
     env_file:

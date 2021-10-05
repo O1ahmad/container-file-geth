@@ -1,9 +1,9 @@
-ARG build_version="golang:1.16-stretch"
+ARG build_version="golang:1.17-stretch"
 
 # ******* Stage: builder ******* #
 FROM ${build_version} as builder
 
-ARG geth_version=v1.10.6
+ARG geth_version=v1.10.9
 
 RUN apt update && apt install --yes --no-install-recommends gcc git make
 
