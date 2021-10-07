@@ -92,7 +92,7 @@ SyncMode = "fast"
 DataDir = "/mnt/data/geth"
 
 # mount custom config into container
-$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/geth:latest --config /tmp/config.toml
+$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/geth:latest geth --config /tmp/config.toml
 ```
 
 _...or developed from both a mounted config and injected environment variables (with envvars taking precedence and overriding mounted config settings):_
@@ -108,14 +108,14 @@ DataDir = "/mnt/data/geth"
 # mount custom config into container
 $ docker run -it --env GETH_CONFIG_DIR=/tmp/geth --env CONFIG-Eth-SyncMode=full \
   --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/geth/config.toml \
-  0labs/geth:latest --config /tmp/geth/config.toml
+  0labs/geth:latest geth --config /tmp/geth/config.toml
 ```
 
 _Moreover, see [here](https://geth.ethereum.org/docs/interface/command-line-options) for a list of supported flags to set as runtime command-line flags._
 
 ```bash
 # connect to Ethereum mainnet and enable HTTP-RPC service 
-docker run 0labs/geth:latest --mainnet --http
+docker run 0labs/geth:latest geth --mainnet --http
 ```
 
 _...and reference below for network/chain identification and communication configs:_ 
@@ -143,7 +143,7 @@ see [chainlist.org](https://chainlist.org/) for a complete list
 
 #### Operations
 
-:flashlight: To assist with managing a `geth` client and interfacing with the *Ethereum* network, the following utility functions have been included within the image.
+:flashlight: To assist with managing a `geth` client and interfacing with the *Ethereum* network, the following utility functions have been included within the image. *Note:* all tool command-line flags can alternatively be expressed as container runtime environment variables, as described below.
 
 ##### Check account balances
 
@@ -245,7 +245,7 @@ Options:
   --help               Show this message and exit.
 ```
 
-`$password=<string>` (**required**)
+`$BACKUP_PASSWORD=<string>` (**required**)
 - password used to encrypt and secure keystore backups. Keystore backup is encrypted using the `zip` utility's password protection feature.
 
 `$KEYSTORE_DIR=<string>` (**default**: `/root/.ethereum/keystore`)
@@ -257,11 +257,9 @@ Options:
 `$AUTO_BACKUP_KEYSTORE=<boolean>` (**default**: `false`)
 - automatically backup keystore to $BACKUP_PATH location every $BACKUP_INTERVAL seconds
 
-`$BACKUP_INTERVAL=<cron-schedule>` (**default**: `* * * * * (hourly)`)
+`$BACKUP_INTERVAL=<cron-schedule>` (**default**: `0 * * * * (hourly)`)
 - keystore backup frequency based on cron schedules
 
-`$BACKUP_PASSWORD=<string>` (**required**)
-- encryption password for automatic backup operations - see *$password*
 
 ##### Import backup
 
