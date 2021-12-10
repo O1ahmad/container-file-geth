@@ -35,3 +35,11 @@ jobs:
                 -e DOCKERHUB_PWD=$DOCKER_PWD
                 -e DOCKERHUB_ORG=0labs
                 -e DOCKERHUB_REPO=geth gofunky/readmyhub:stable
+
+         - when:
+              condition:
+                equal: [ master, << pipeline.git.branch >> ]
+              steps:
+                - run:
+                     name: release master version as latest
+                     command: make latest
