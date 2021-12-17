@@ -11,7 +11,7 @@ test:
 
 test-compose:
 	echo "image=${image_repo}:${version}" > compose/.env-test
-	cd compose && docker-compose config && docker-compose --env-file .env-test up -d && \
+	cd compose && docker-compose --env-file .env-test config && docker-compose --env-file .env-test up -d && \
 	sleep 5 && docker-compose logs 2>&1 | grep "Starting Geth on Rinkeby" && \
 	docker-compose down && rm .env-test
 
