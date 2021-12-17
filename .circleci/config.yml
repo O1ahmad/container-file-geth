@@ -14,16 +14,16 @@ jobs:
               command: make test
 
          - run:
-              name: test docker-compose definition
-              command: make test-compose
-
-         - run:
               name: login to Dockerhub for release
               command: echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
 
          - run:
               name: push image version to Dockerhub
               command: make release
+
+         - run:
+              name: test docker-compose definition
+              command: make test-compose
 
          - run:
               name: build and push tools image version to Dockerhub
