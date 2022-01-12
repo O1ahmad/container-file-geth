@@ -35,6 +35,34 @@ file:
     owner: root
     group: root
     filetype: directory
+  # genesis init test specs
+  /tmp/genesis.json:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+  /mnt/data/keystore:
+    exists: true
+    owner: root
+    group: root
+    filetype: directory
+  /mnt/data/geth/nodekey:
+    exists: true
+    mode: "0600"
+    owner: root
+    group: root
+    filetype: file
+  /mnt/data/geth/chaindata:
+    exists: true
+    owner: root
+    group: root
+    filetype: directory
+  /mnt/data/geth/lightchaindata:
+    exists: true
+    owner: root
+    group: root
+    filetype: directory
 package:
   curl:
     installed: true
