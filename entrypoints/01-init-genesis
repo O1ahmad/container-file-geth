@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Print all commands executed if DEBUG mode enabled
+[ -n "${DEBUG:-""}" ] && set -x
+
+if [[ -n ${GENESIS_INIT_PATH} ]]; then
+    wget ${GENESIS_INIT_PATH} -O /tmp/genesis.json
+	geth init /tmp/genesis.json --datadir ${CONFIG-Node-DataDir:-/root/.ethereum}
+fi
