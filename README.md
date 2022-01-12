@@ -383,6 +383,11 @@ docker exec --env BACKUP_PASSWORD=<secret>
 docker exec 01-geth account import /root/.ethereum/keystore/a-wallet
 ```
 
+* Initialize client genesis block and definition and run node on Kintsugi testnet:
+```
+docker run --env GENESIS_INIT_PATH=https://raw.githubusercontent.com/parithosh/consensus-deployment-ansible/master/kintsugi-testnet/custom_config_data/genesis.json --env CONFIG-Eth-NetworkId=1337702 0labs/geth:latest
+```
+
 License
 -------
 
