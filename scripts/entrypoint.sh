@@ -10,4 +10,8 @@ if [[ -d "$DIR" ]] ; then
   /bin/run-parts --exit-on-error "$DIR"
 fi
 
-exec /usr/bin/tini -g -- "$@"
+if [[ -n "${EXTRA_ARGS:-""}" ]]; then
+  exec /usr/bin/tini -g -- $@ ${EXTRA_ARGS}
+else
+  exec /usr/bin/tini -g -- "$@"
+fi

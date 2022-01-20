@@ -131,6 +131,13 @@ _Moreover, see [here](https://geth.ethereum.org/docs/interface/command-line-opti
 docker run 0labs/geth:latest geth --mainnet --http
 ```
 
+`$EXTRA_ARGS=<string>` (**default**: `''`)
+- space separated list of command-line flags to pass at run-time
+
+  ```bash
+  docker run --env EXTRA_ARGS="--goerli --http --metrics" 0labs/geth:latest
+  ```
+
 _...and reference below for network/chain identification and communication configs:_ 
 
 ###### port mappings
