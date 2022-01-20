@@ -57,7 +57,7 @@ CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 # ******* Stage: release ******* #
 FROM base as release
 
-ARG version=0.2.2
+ARG version=0.2.3
 
 LABEL 01labs.image.authors="zer0ne.io.x@gmail.com" \
 	01labs.image.vendor="O1 Labs" \
