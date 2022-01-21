@@ -392,7 +392,7 @@ docker exec 01-geth account import /root/.ethereum/keystore/a-wallet
 
 * Initialize client genesis block and definition and run node on Kintsugi testnet:
 ```
-docker run --env GETH_CONFIG_DIR=/tmp --env GENESIS_INIT_PATH=https://raw.githubusercontent.com/parithosh/consensus-deployment-ansible/master/kintsugi-testnet/custom_config_data/genesis.json --env CONFIG-Eth-NetworkId=1337702 0labs/geth:latest geth --config /tmp/config.toml --catalyst 
+docker run --env GETH_CONFIG_DIR=/tmp --env GENESIS_INIT_PATH=https://raw.githubusercontent.com/parithosh/consensus-deployment-ansible/master/kintsugi-testnet/custom_config_data/genesis.json --env CONFIG-Eth-NetworkId=1337702 --env EXTRA_ARGS="--config /tmp/config.toml --catalyst" 0labs/geth:latest 
 ```
 
 License
