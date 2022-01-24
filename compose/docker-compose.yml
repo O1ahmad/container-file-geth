@@ -24,7 +24,7 @@ services:
       - ${ws_port:-8546}:8546
       - ${metrics_port:-6060}:6060
     volumes:
-      - "${host_data_dir:-/var/tmp/geth/data}:${data_dir:-/root/.ethereum}"
+      - "${host_data_dir:-/var/tmp/geth}:${data_dir:-/root/.ethereum}"
     networks:
       - ethereum
     restart: ${restart_policy:-unless-stopped}
