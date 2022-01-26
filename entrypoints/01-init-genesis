@@ -4,9 +4,11 @@
 [ -n "${DEBUG:-""}" ] && set -x
 
 if [[ -n ${GENESIS_INIT_PATH} ]]; then
+    echo "Genesis init activated. Downloading ${GENESIS_INIT_PATH}..."
     curl -o /tmp/genesis.json ${GENESIS_INIT_PATH}
     
     # identify client configured datadir if set
     d=$(env | grep "CONFIG-Node-DataDir" | cut -d'=' -f2)
+    echo "Initializing node at ${d:-/root/.ethereum}..."
     geth init /tmp/genesis.json --datadir "${d:-/root/.ethereum}"
 fi
