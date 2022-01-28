@@ -99,7 +99,7 @@ _Additionally, the content of the TOML configuration file can either be pregener
 ```bash
 $ cat custom-config.toml
 [Eth]
-SyncMode = "fast"
+SyncMode = "light"
 
 [Node]
 DataDir = "/mnt/data/geth"
@@ -113,7 +113,7 @@ _...or developed from both a mounted config and injected environment variables (
 ```bash
 $ cat custom-config.toml
 [Eth]
-SyncMode = "fast"
+SyncMode = "light"
 
 [Node]
 DataDir = "/mnt/data/geth"
