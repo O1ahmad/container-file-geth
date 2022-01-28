@@ -369,9 +369,9 @@ docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full 0labs/geth:lat
 docker exec 01-geth geth-helper status sync-progress
 ```
 
-* Run *fast* sync node with automatic daily backups of custom keystore directory:
+* Run *light* sync node with automatic daily backups of custom keystore directory:
 ```
-docker run --env CONFIG-Eth-SyncMode=fast --env KEYSTORE_DIR=/tmp/keystore \
+docker run --env CONFIG-Eth-SyncMode=light --env KEYSTORE_DIR=/tmp/keystore \
            --env AUTO_BACKUP_KEYSTORE=true --env BACKUP_INTERVAL="0 * * * *" \
            --env BACKUP_PASSWORD=<secret> \
   --volume ~/.ethereum/keystore:/tmp/keystore 0labs/geth:latest
