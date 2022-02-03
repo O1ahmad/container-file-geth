@@ -52,6 +52,8 @@ WORKDIR /test
 COPY test /test
 COPY --from=builder /tmp/go-ethereum/build/bin/geth /usr/local/bin/
 
+ENV NOLOAD_CONFIG=1
+
 CMD ["goss", "--gossfile", "/test/goss.yaml", "validate"]
 
 # ******* Stage: release ******* #
