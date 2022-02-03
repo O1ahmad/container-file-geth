@@ -105,7 +105,7 @@ SyncMode = "light"
 DataDir = "/mnt/data/geth"
 
 # mount custom config into container
-$ docker run --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/config.toml 0labs/geth:latest geth --config /tmp/config.toml
+$ docker run --env GETH_CONFIG_DIR=/tmp/geth --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/geth/config.toml 0labs/geth:latest
 ```
 
 _...or developed from both a mounted config and injected environment variables (with envvars taking precedence and overriding mounted config settings):_
@@ -121,7 +121,7 @@ DataDir = "/mnt/data/geth"
 # mount custom config into container
 $ docker run -it --env GETH_CONFIG_DIR=/tmp/geth --env CONFIG-Eth-SyncMode=full \
   --mount type=bind,source="$(pwd)"/custom-config.toml,target=/tmp/geth/config.toml \
-  0labs/geth:latest geth --config /tmp/geth/config.toml
+  0labs/geth:latest
 ```
 
 _Moreover, see [here](https://geth.ethereum.org/docs/interface/command-line-options) for a list of supported flags to set as runtime command-line flags._
@@ -352,19 +352,19 @@ docker exec --env RPC_ADDRESS=geth-rpc.live.01labs.net --env RPC_METHOD=eth_gasP
 Examples
 ----------------
 
-* Create account and bind data/keystore directory to host path:
+* Create account and bind data/keystore directory to host path (**note:** automatic loading of config should be disabled):
 ```
-docker run -it -v /mnt/geth/data:/root/.ethereum/ 0labs/geth:latest geth account new --password <secret>
+docker run --env NOLOAD_CONFIG=1 -it -v /mnt/geth/data:/root/.ethereum/ 0labs/geth:latest geth account new --password <secret>
 ```
 
 * Launch an Ethereum light client and connect it to the Ropsten, best current like-for-like representation of Ethereum, PoW (Proof of Work) test network:
 ```
-docker run --env CONFIG-Eth-SyncMode=light 0labs/geth:latest geth --ropsten
+docker run --env CONFIG-Eth-SyncMode=light --EXTRA_ARGS="--ropsten" 0labs/geth:latest
 ```
 
 * View sync progress of active local full-node:
 ```
-docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full 0labs/geth:latest geth --mainnet
+docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full --env EXTRA_ARGS="--mainnet" 0labs/geth:latest
 
 docker exec 01-geth geth-helper status sync-progress
 ```
@@ -379,9 +379,9 @@ docker run --env CONFIG-Eth-SyncMode=light --env KEYSTORE_DIR=/tmp/keystore \
 
 * Import account from keystore backup stored on an attached USB drive:
 ```
-docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full \
+docker run --name 01-geth --detach --env CONFIG-Eth-SyncMode=full --env EXTRA_ARGS="--mainnet" \
            --volume /path/to/usb/mount/keys:/tmp/keys \
-           --volume ~/.ethereum:/root/.ethereum \0labs/geth:latest geth --mainnet
+           --volume ~/.ethereum:/root/.ethereum \0labs/geth:latest
 
 docker exec --env BACKUP_PASSWORD=<secret>
             --env BACKUP_PATH=/tmp/keys/my-wallets.zip
@@ -392,7 +392,7 @@ docker exec 01-geth account import /root/.ethereum/keystore/a-wallet
 
 * Initialize client genesis block and definition and run node on Kintsugi testnet:
 ```
-docker run --env GETH_CONFIG_DIR=/tmp --env GENESIS_INIT_PATH=https://raw.githubusercontent.com/parithosh/consensus-deployment-ansible/master/kintsugi-testnet/custom_config_data/genesis.json --env CONFIG-Eth-NetworkId=1337702 --env EXTRA_ARGS="--config /tmp/config.toml --catalyst" 0labs/geth:latest 
+docker run --env GETH_CONFIG_DIR=/tmp/geth --env GENESIS_INIT_PATH=https://raw.githubusercontent.com/parithosh/consensus-deployment-ansible/master/kintsugi-testnet/custom_config_data/genesis.json --env CONFIG-Eth-NetworkId=1337702 --env EXTRA_ARGS="--catalyst" 0labs/geth:latest 
 ```
 
 License
