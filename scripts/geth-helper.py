@@ -240,10 +240,10 @@ def sync_progress(rpc_addr):
 
         client_version = execute_jsonrpc(rpc_addr, "web3_clientVersion")['result']
         client_type = client_version.split('/')[0]
-        if client_type.lower() == "geth" and status['knownStates']:
+        if client_type.lower() == "geth" and status.get('knownStates'):
             stateUnit = "trie nodes"
             stateProgress = 0 if int(status['knownStates'], 16) == 0 else (int(status['pulledStates'], 16) / int(status['knownStates'], 16)) * 100
-        elif client_type.lower() == "openethereum" and status['warpChunksAmount']:
+        elif client_type.lower() == "openethereum" and status.get('warpChunksAmount'):
             stateUnit = "warp chunks"
             stateProgress = 0 if int(status['warpChunksAmount'], 16) == 0 else (int(status['warpChunksProcessed'], 16) / int(status['warpChunksAmount'], 16)) * 100
         else:
