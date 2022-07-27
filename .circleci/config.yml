@@ -9,9 +9,9 @@ jobs:
          - run:
               name: docker build complete image
               command: make build
-         - run:
-              name: docker build and test image base
-              command: make test
+     #     - run:
+     #          name: docker build and test image base
+     #          command: make test
 
          - run:
               name: login to Dockerhub for release
