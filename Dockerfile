@@ -1,4 +1,4 @@
-ARG build_version="golang:1.17-buster"
+ARG build_version="golang:1.19-buster"
 
 # ******* Stage: builder ******* #
 FROM ${build_version} as builder
