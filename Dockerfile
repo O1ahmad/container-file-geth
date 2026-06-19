@@ -14,7 +14,7 @@ RUN cd go-ethereum && make geth
 WORKDIR /tmp/go-ethereum
 
 # ******* Stage: base ******* #
-FROM ubuntu:20.04 as base
+FROM ubuntu:26.04 as base
 
 RUN apt update && apt install --yes --no-install-recommends \
     ca-certificates \
